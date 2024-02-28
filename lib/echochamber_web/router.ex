@@ -1,6 +1,5 @@
 defmodule EchochamberWeb.Router do
   use EchochamberWeb, :router
-
   import EchochamberWeb.UserAuth
 
   pipeline :browser do
