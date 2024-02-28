@@ -17,7 +17,9 @@ defmodule Echochamber.Application do
       # Start a worker by calling: Echochamber.Worker.start_link(arg)
       # {Echochamber.Worker, arg},
       # Start to serve requests, typically the last entry
-      EchochamberWeb.Endpoint
+      EchochamberWeb.Endpoint,
+      # Start presence
+      EchochamberWeb.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
