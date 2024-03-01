@@ -13,7 +13,8 @@ defmodule EchochamberWeb.OnlineLive do
         socket
       end
 
-    {:ok, socket}
+    {:ok, socket
+          |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
   end
 
   def render(assigns) do
@@ -27,14 +28,17 @@ defmodule EchochamberWeb.OnlineLive do
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
-    {:noreply, stream_insert(socket, :presences, presence)}
+    {:noreply, stream_insert(socket, :presences, presence)
+    |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
   end
 
   def handle_info({EchochamberWeb.Presence, {:leave, presence}}, socket) do
     if presence.metas == [] do
-      {:noreply, stream_delete(socket, :presences, presence)}
+      {:noreply, stream_delete(socket, :presences, presence)
+      |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
     else
-      {:noreply, stream_insert(socket, :presences, presence)}
+      {:noreply, stream_insert(socket, :presences, presence)
+      |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
     end
   end
 end

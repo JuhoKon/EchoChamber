@@ -57,13 +57,13 @@ defmodule EchochamberWeb.Router do
   scope "/", EchochamberWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    get "/", PageController, :home
+    #get "/", PageController, :home
     get "/hello", HelloController, :index
     get "/hello/:messenger", HelloController, :show
 
     live_session :require_authenticated_user,
                  on_mount: [{EchochamberWeb.UserAuth, :ensure_authenticated}] do
-      live "/online", OnlineLive, :index
+      live "/", OnlineLive, :index
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end

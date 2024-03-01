@@ -1,32 +1,19 @@
-<header class="px-4 sm:px-6 lg:px-8">
-  <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-    <div class="flex items-center gap-4">
-      <a href="/">
-        <img src={~p"/images/logo.svg"} width="36" />
-      </a>
-      <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-        v<%= Application.spec(:phoenix, :vsn) %>
-      </p>
-    </div>
-    <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
-      <a href="https://twitter.com/elixirphoenix" class="hover:text-zinc-700">
-        @elixirphoenix
-      </a>
-      <a href="https://github.com/phoenixframework/phoenix" class="hover:text-zinc-700">
-        GitHub
-      </a>
-      <a
-        href="https://hexdocs.pm/phoenix/overview.html"
-        class="rounded-lg bg-zinc-100 px-2 py-1 hover:bg-zinc-200/80"
-      >
-        Get Started <span aria-hidden="true">&rarr;</span>
-      </a>
-    </div>
-  </div>
-</header>
 <main class="px-4 py-20 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-2xl">
-    <.flash_group flash={@flash} />
+    <!-- <.flash_group flash={@flash} /> -->
     <%= @inner_content %>
   </div>
 </main>
+<div class="flex lg:flex-shrink-0" role="region">
+  <div class="flex flex-col w-64 border-r border-gray-200 pt-5 pb-4 bg-gray-100">
+    <!-- Sidebar component, swap this element with another sidebar if you like -->
+    <div class="h-0 flex-1 flex flex-col overflow-y-auto">
+      <!-- Navigation -->
+      <nav class="px-3">
+        <%= if @current_user do %>
+          <.sidebar_active_users id="active-users" users={@active_users} />
+        <% end %>
+      </nav>
+    </div>
+  </div>
+</div>
