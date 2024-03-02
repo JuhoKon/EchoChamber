@@ -6,24 +6,20 @@ defmodule EchochamberWeb.Layouts do
   def sidebar_active_users(assigns) do
     ~H"""
     <div>
-    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" id={@id}>
-      Active Users
-    </h3>
-    <div class="mt-1 space-y-1" role="group" aria-labelledby={@id}>
-      <%= for user <- @users do %>
-        <.link
-
-          class="group flex items-center px-3 py-2 text-base leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
-        >
-          <span class="w-2.5 h-2.5 mr-4 bg-indigo-500 rounded-full" aria-hidden="true"></span>
-          <span class="truncate">
-            <%= user.id %>
-          </span>
-        </.link>
-      <% end %>
+      <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider" id={@id}>
+        Active Users
+      </h3>
+      <div class="mt-1 space-y-1" role="group" aria-labelledby={@id}>
+        <%= for user <- @users do %>
+          <.link class="group flex items-center px-3 py-2 text-base leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
+            <span class="w-2.5 h-2.5 mr-4 bg-indigo-500 rounded-full" aria-hidden="true"></span>
+            <span class="truncate">
+              <%= user.id %>
+            </span>
+          </.link>
+        <% end %>
+      </div>
     </div>
-  </div>
-
     """
   end
 
