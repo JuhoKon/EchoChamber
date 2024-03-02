@@ -1,19 +1,17 @@
+<%= if @current_user do %>
+  <div class="flex lg:flex-shrink-0" role="region">
+    <div class="flex flex-col w-64 border-r border-gray-200 pt-5 pb-4 bg-gray-100">
+      <div class="h-0 flex-1 flex flex-col overflow-y-auto">
+        <nav class="px-3">
+          <%= live_render(@socket, EchochamberWeb.OnlineLive, id: "player") %>
+        </nav>
+      </div>
+    </div>
+  </div>
+<% end %>
 <main class="px-4 py-20 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-2xl">
     <!-- <.flash_group flash={@flash} /> -->
     <%= @inner_content %>
   </div>
 </main>
-<div class="flex lg:flex-shrink-0" role="region">
-  <div class="flex flex-col w-64 border-r border-gray-200 pt-5 pb-4 bg-gray-100">
-    <!-- Sidebar component, swap this element with another sidebar if you like -->
-    <div class="h-0 flex-1 flex flex-col overflow-y-auto">
-      <!-- Navigation -->
-      <nav class="px-3">
-        <%= if @current_user do %>
-          <.sidebar_active_users id="active-users" users={@active_users} />
-        <% end %>
-      </nav>
-    </div>
-  </div>
-</div>

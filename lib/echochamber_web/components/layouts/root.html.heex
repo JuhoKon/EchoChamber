@@ -16,16 +16,16 @@
       <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
         <div class="flex items-center gap-4">
           <p class="bg-brand/5 text-brand rounded-full px-2 font-medium leading-6">
-            Echochamber
+            <.link navigate={~p"/"}> Echochamber </.link>
           </p>
         </div>
         <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
           <%= if @current_user do %>
-            <a href="https://twitter.com/elixirphoenix" class="hover:text-zinc-700">
+            <.link navigate={home_path(@current_user)} class="hover:text-zinc-700">
               <%= @current_user.email %>
-            </a>
+            </.link>
             <.link
-              href={~p"/users/settings"}
+              navigate={~p"/users/settings"}
               class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
             >
               Settings
@@ -39,14 +39,14 @@
             </.link>
           <% else %>
             <.link
-              href={~p"/users/register"}
+              navigate={~p"/users/register"}
               class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
             >
               Register
             </.link>
 
             <.link
-              href={~p"/users/log_in"}
+              navigate={~p"/users/log_in"}
               class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
             >
               Log in
