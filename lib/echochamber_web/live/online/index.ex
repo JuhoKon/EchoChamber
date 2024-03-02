@@ -4,8 +4,6 @@ defmodule EchochamberWeb.OnlineLive do
   on_mount {EchochamberWeb.UserAuth, :mount_current_user}
   
   def mount(_params, _session, socket) do
-    IO.puts("WHAT")
-    IO.inspect(socket)
     socket = stream(socket, :presences, [])
 
     socket =
