@@ -3,7 +3,7 @@ defmodule EchochamberWeb.HomeLive do
 
   def render(assigns) do
     ~H"""
-    <div>Hello <%= @temperature %></div>
+    <div>Homepage with an interactive running value and a button...  <%= @temperature %></div>
     <button phx-click="inc_temperature">+</button>
     """
   end
