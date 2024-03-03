@@ -24,6 +24,8 @@ defmodule EchochamberWeb.OnlineLive do
   end
 
   def render(assigns) do
+    IO.inspect(assigns)
+
     ~H"""
     <div>
       <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -37,7 +39,7 @@ defmodule EchochamberWeb.OnlineLive do
           >
             <span class="w-2.5 h-2.5 mr-4 bg-indigo-500 rounded-full" aria-hidden="true"></span>
             <span class="truncate">
-              <%= user.user.email %>
+              <%= user.user.username %>
             </span>
           </.link>
         <% end %>

@@ -25,12 +25,12 @@ defmodule EchochamberWeb.CoreComponents do
   def home_path(nil = _current_user), do: "/"
   def home_path(%Accounts.User{} = current_user), do: profile_path(current_user)
 
-  def profile_path(email) when is_binary(email) do
-    unverified_path(EchochamberWeb.Endpoint, EchochamberWeb.Router, ~p"/radio/#{email}")
+  def profile_path(username) when is_binary(username) do
+    unverified_path(EchochamberWeb.Endpoint, EchochamberWeb.Router, ~p"/radio/#{username}")
   end
 
   def profile_path(%Accounts.User{} = current_user) do
-    profile_path(current_user.email)
+    profile_path(current_user.username)
   end
 
   @doc """
