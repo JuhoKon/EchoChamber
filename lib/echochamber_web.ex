@@ -52,7 +52,8 @@ defmodule EchochamberWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {EchochamberWeb.Layouts, :app}
+          layout: {EchochamberWeb.Layouts, :app},
+          container: {:div, class: "flex"}
 
       unquote(html_helpers())
     end
