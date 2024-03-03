@@ -2,14 +2,14 @@ defmodule EchochamberWeb.OnlineLive do
   use EchochamberWeb, :live_view
 
   on_mount {EchochamberWeb.UserAuth, :mount_current_user}
-  
+
   def mount(_params, _session, socket) do
     socket = stream(socket, :presences, [])
 
     socket =
       if connected?(socket) do
         EchochamberWeb.Presence.track_user(socket.assigns.current_user.email, %{
-          id: socket.assigns.current_user.email
+          id: socket.assigns.current_user.id
         })
 
         EchochamberWeb.Presence.subscribe()
@@ -31,18 +31,19 @@ defmodule EchochamberWeb.OnlineLive do
       </h3>
       <div class="mt-1 space-y-1" role="group">
         <%= for user <- @active_users do %>
-        <.link
-          navigate={home_path(@current_user)}
-          class="group flex items-center px-3 py-2 text-base leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50">
-          <span class="w-2.5 h-2.5 mr-4 bg-indigo-500 rounded-full" aria-hidden="true"></span>
-          <span class="truncate">
-            <%= user.id %>
-          </span>
-        </.link>
+          <.link
+            navigate={home_path(user.user)}
+            class="group flex items-center px-3 py-2 text-base leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
+          >
+            <span class="w-2.5 h-2.5 mr-4 bg-indigo-500 rounded-full" aria-hidden="true"></span>
+            <span class="truncate">
+              <%= user.user.email %>
+            </span>
+          </.link>
         <% end %>
       </div>
     </div>
-        """
+    """
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do

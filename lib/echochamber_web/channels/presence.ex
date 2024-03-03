@@ -5,6 +5,8 @@ defmodule EchochamberWeb.Presence do
   See the [`Phoenix.Presence`](https://hexdocs.pm/phoenix/Phoenix.Presence.html)
   docs for more details.
   """
+  alias Echochamber.Accounts
+
   use Phoenix.Presence,
     otp_app: :echochamber,
     pubsub_server: Echochamber.PubSub
@@ -17,7 +19,7 @@ defmodule EchochamberWeb.Presence do
     for {key, %{metas: [meta | metas]}} <- presences, into: %{} do
       # user can be populated here from the database here we populate
       # the name for demonstration purposes
-      {key, %{metas: [meta | metas], id: meta.id, user: %{name: meta.id}}}
+      {key, %{metas: [meta | metas], id: meta.id, user: Accounts.get_user!(meta.id)}}
     end
   end
 
