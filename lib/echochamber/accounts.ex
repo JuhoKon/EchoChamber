@@ -20,10 +20,10 @@ defmodule Echochamber.Accounts do
 
   defp topic(username), do: "user:#{username}"
 
-  def testihaloo(%User{} = current_user, msg) do
+  def broadcast_message(%User{} = current_user, msg) do
     broadcast!(
       current_user,
-      %Events.Haloo{msg: msg}
+      %Events.Message{msg: msg}
     )
   end
 

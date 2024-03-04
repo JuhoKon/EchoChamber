@@ -39,13 +39,21 @@ defmodule EchochamberWeb.RadioLive do
      socket
      |> assign(user: user)
      |> assign(msg: nil)
-     |> assign(
-       count: IO.inspect(Enum.count(EchochamberWeb.Presence.list_profile_users(user)))
-     )}
+     |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))}
+  end
+
+  def handle_event("asiaa", _params, socket) do
+    Accounts.broadcast_message(socket.assigns.current_user, "Asiaa")
+    {:noreply, socket}
+  end
+
+  def handle_event("ei_asiaa", _params, socket) do
+    Accounts.broadcast_message(socket.assigns.current_user, "Ei asiaa")
+    {:noreply, socket}
   end
 
   def handle_info(
-        {Accounts, %Accounts.Events.Haloo{msg: msg}},
+        {Accounts, %Accounts.Events.Message{msg: msg}},
         socket
       ) do
     if msg do
@@ -53,16 +61,6 @@ defmodule EchochamberWeb.RadioLive do
     else
       {:noreply, socket}
     end
-  end
-
-  def handle_event("asiaa", _params, socket) do
-    Accounts.testihaloo(socket.assigns.current_user, "Asiaa")
-    {:noreply, socket}
-  end
-
-  def handle_event("ei_asiaa", _params, socket) do
-    Accounts.testihaloo(socket.assigns.current_user, "Ei asiaa")
-    {:noreply, socket}
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
@@ -75,11 +73,15 @@ defmodule EchochamberWeb.RadioLive do
     if presence.metas == [] do
       {:noreply,
        stream_delete(socket, :presences, presence)
-       |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
+       |> assign(
+         count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user))
+       )}
     else
       {:noreply,
        stream_insert(socket, :presences, presence)
-       |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
+       |> assign(
+         count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user))
+       )}
     end
   end
 end
