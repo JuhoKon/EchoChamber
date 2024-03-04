@@ -12,16 +12,36 @@ defmodule EchochamberWeb.RadioLive do
     <%= if @msg do %>
       <div><%= @msg %></div>
     <% end %>
+
+    <div>Active listeners: <%= @count %></div>
     """
   end
 
   def mount(%{"user" => user}, _session, socket) do
+    socket = stream(socket, :presences, [])
+
+    socket =
+      if connected?(socket) do
+        EchochamberWeb.Presence.track_user(user, socket.assigns.current_user.email, %{
+          id: socket.assigns.current_user.id
+        })
+
+        EchochamberWeb.Presence.subscribe(user)
+        Accounts.subscribe(socket.assigns.current_user.id)
+        stream(socket, :presences, EchochamberWeb.Presence.list_profile_users(user))
+      else
+        socket
+      end
+
     Accounts.subscribe(user)
 
     {:ok,
      socket
      |> assign(user: user)
-     |> assign(msg: nil)}
+     |> assign(msg: nil)
+     |> assign(
+       count: IO.inspect(Enum.count(EchochamberWeb.Presence.list_profile_users(user)))
+     )}
   end
 
   def handle_info(
@@ -43,5 +63,23 @@ defmodule EchochamberWeb.RadioLive do
   def handle_event("ei_asiaa", _params, socket) do
     Accounts.testihaloo(socket.assigns.current_user, "Ei asiaa")
     {:noreply, socket}
+  end
+
+  def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
+    {:noreply,
+     stream_insert(socket, :presences, presence)
+     |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
+  end
+
+  def handle_info({EchochamberWeb.Presence, {:leave, presence}}, socket) do
+    if presence.metas == [] do
+      {:noreply,
+       stream_delete(socket, :presences, presence)
+       |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
+    else
+      {:noreply,
+       stream_insert(socket, :presences, presence)
+       |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
+    end
   end
 end

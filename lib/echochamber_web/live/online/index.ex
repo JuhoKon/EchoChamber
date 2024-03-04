@@ -8,11 +8,11 @@ defmodule EchochamberWeb.OnlineLive do
 
     socket =
       if connected?(socket) do
-        EchochamberWeb.Presence.track_user(socket.assigns.current_user.email, %{
+        EchochamberWeb.Presence.track_user("online_users", socket.assigns.current_user.email, %{
           id: socket.assigns.current_user.id
         })
 
-        EchochamberWeb.Presence.subscribe()
+        EchochamberWeb.Presence.subscribe("online_users")
         Accounts.subscribe(socket.assigns.current_user.id)
         stream(socket, :presences, EchochamberWeb.Presence.list_online_users())
       else
