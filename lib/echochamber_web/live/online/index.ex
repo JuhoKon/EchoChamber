@@ -1,6 +1,6 @@
 defmodule EchochamberWeb.OnlineLive do
   use EchochamberWeb, :live_view
-
+  alias Echochamber.Accounts
   on_mount {EchochamberWeb.UserAuth, :mount_current_user}
 
   def mount(_params, _session, socket) do
@@ -13,6 +13,7 @@ defmodule EchochamberWeb.OnlineLive do
         })
 
         EchochamberWeb.Presence.subscribe()
+        Accounts.subscribe(socket.assigns.current_user.id)
         stream(socket, :presences, EchochamberWeb.Presence.list_online_users())
       else
         socket

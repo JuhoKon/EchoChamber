@@ -6,7 +6,30 @@ defmodule Echochamber.Accounts do
   import Ecto.Query, warn: false
   alias Echochamber.Repo
 
-  alias Echochamber.Accounts.{User, UserToken, UserNotifier}
+  alias Echochamber.Accounts.{User, UserToken, UserNotifier, Events}
+
+  @pubsub Echochamber.PubSub
+
+  def subscribe(username) do
+    Phoenix.PubSub.subscribe(@pubsub, topic(username))
+  end
+
+  def unsubscribe(username) do
+    Phoenix.PubSub.unsubscribe(@pubsub, topic(username))
+  end
+
+  defp topic(username), do: "user:#{username}"
+
+  def testihaloo(%User{} = current_user, msg) do
+    broadcast!(
+      current_user,
+      %Events.Haloo{msg: msg}
+    )
+  end
+
+  def broadcast!(%User{} = user, msg) do
+    Phoenix.PubSub.broadcast!(@pubsub, topic(user.username), {__MODULE__, msg})
+  end
 
   ## Database getters
 
