@@ -4,16 +4,35 @@ defmodule EchochamberWeb.RadioLive do
 
   def render(assigns) do
     ~H"""
-    <div>Welcome to <%= @user %>'s radio!</div>
-    <%= if @user == @current_user.username do %>
-      <button class="p-10 bg-blue-100" phx-click="asiaa">asiaa</button>
-      <button class="p-10 bg-blue-100" phx-click="ei_asiaa">ei asiaa</button>
-    <% end %>
-    <%= if @msg do %>
-      <div><%= @msg %></div>
-    <% end %>
-
-    <div>Active listeners: <%= @count %></div>
+    <!-- player -->
+    <div id="audio-player" phx-hook="AudioPlayer" class="w-full" role="region" aria-label="Player">
+      <div class="w-full h-48" id="visual-container"></div>
+      <div id="audio-ignore" phx-update="ignore">
+        <audio crossorigin="anonymous"></audio>
+      </div>
+      <%= if @user == @current_user.username do %>
+        <button class="p-5 bg-blue-100" phx-click="js_play">Play</button>
+        <button class="p-5 bg-blue-100" phx-click="js_pause">Pause</button>
+        <div class="flex flex-col w-fit gap-2 mt-2">
+          Radios:
+          <button
+            class="p-5 bg-blue-100"
+            phx-click="js_play_radio"
+            phx-value-url="https://uk3.internet-radio.com/proxy/co9?mp=/stream"
+          >
+            UK 3
+          </button>
+          <button
+            class="p-5 bg-blue-100"
+            phx-click="js_play_radio"
+            phx-value-url="https://technobeat.stream.laut.fm/technobeat"
+          >
+            Technobeat
+          </button>
+        </div>
+      <% end %>
+    </div>
+    <!-- /player -->
     """
   end
 
@@ -42,25 +61,47 @@ defmodule EchochamberWeb.RadioLive do
      |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))}
   end
 
-  def handle_event("asiaa", _params, socket) do
-    Accounts.broadcast_message(socket.assigns.current_user, "Asiaa")
+  def handle_event("js_play_radio", %{"url" => url}, socket) do
+    Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Song{
+      radio: url
+    })
+
     {:noreply, socket}
   end
 
-  def handle_event("ei_asiaa", _params, socket) do
-    Accounts.broadcast_message(socket.assigns.current_user, "Ei asiaa")
+  def handle_event("js_play", _params, socket) do
+    Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Pause{
+      radio: nil
+    })
+
     {:noreply, socket}
   end
 
-  def handle_info(
-        {Accounts, %Accounts.Events.Message{msg: msg}},
-        socket
-      ) do
-    if msg do
-      {:noreply, assign(socket, msg: msg)}
-    else
-      {:noreply, socket}
-    end
+  def handle_event("js_pause", _params, socket) do
+    Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Pause{radio: nil})
+
+    {:noreply, socket}
+  end
+
+  def handle_info({Accounts, %Accounts.Events.Play_Pause{radio: url}}, socket) do
+    {:noreply,
+     push_event(socket, "play_pause", %{
+       url: url
+     })}
+  end
+
+  def handle_info({Accounts, %Accounts.Events.Pause{radio: url}}, socket) do
+    {:noreply,
+     push_event(socket, "pause", %{
+       url: url
+     })}
+  end
+
+  def handle_info({Accounts, %Accounts.Events.Play_Song{radio: url}}, socket) do
+    {:noreply,
+     push_event(socket, "play", %{
+       url: url
+     })}
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do

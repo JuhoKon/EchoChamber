@@ -3,6 +3,14 @@ defmodule EchochamberWeb.OnlineLive do
   alias Echochamber.Accounts
   on_mount {EchochamberWeb.UserAuth, :mount_current_user}
 
+  defp add_listeners_to_user(user) do
+    Map.put(
+      user,
+      :listeners,
+      Enum.count(EchochamberWeb.Presence.list_profile_users(user.user.username))
+    )
+  end
+
   def mount(_params, _session, socket) do
     socket = stream(socket, :presences, [])
 
@@ -21,25 +29,34 @@ defmodule EchochamberWeb.OnlineLive do
 
     {:ok,
      socket
-     |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
+     |> assign(
+       active_users:
+         Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
+     )}
   end
 
   def render(assigns) do
     ~H"""
     <div>
-      <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+      <h3 class="text-zinc-900 font-bold p-4 text-center">
         Active Users
       </h3>
       <div class="mt-1 space-y-1" role="group">
         <%= for user <- @active_users do %>
           <.link
             navigate={home_path(user.user)}
-            class="group flex items-center px-3 py-2 text-base leading-5 font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-50"
+            class="group flex items-center px-3 py-2 text-base leading-5 font-medium text-zinc-900 rounded-md hover:text-gray-900 gap-4"
           >
-            <span class="w-2.5 h-2.5 mr-4 bg-blue-600 rounded-full" aria-hidden="true"></span>
-            <span class="truncate">
-              <%= user.user.username %>
-            </span>
+            <img
+              class="h-10"
+              src="https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg"
+            />
+            <div class="flex flex-col">
+              <span class="truncate">
+                <%= user.user.username %>
+              </span>
+              <span class="text-zinc-500 text-sm"><%= user.listeners %> listener(s)</span>
+            </div>
           </.link>
         <% end %>
       </div>
@@ -50,18 +67,27 @@ defmodule EchochamberWeb.OnlineLive do
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
     {:noreply,
      stream_insert(socket, :presences, presence)
-     |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
+     |> assign(
+       active_users:
+         Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
+     )}
   end
 
   def handle_info({EchochamberWeb.Presence, {:leave, presence}}, socket) do
     if presence.metas == [] do
       {:noreply,
        stream_delete(socket, :presences, presence)
-       |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
+       |> assign(
+         active_users:
+           Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
+       )}
     else
       {:noreply,
        stream_insert(socket, :presences, presence)
-       |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
+       |> assign(
+         active_users:
+           Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
+       )}
     end
   end
 end

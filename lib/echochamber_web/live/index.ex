@@ -3,18 +3,11 @@ defmodule EchochamberWeb.HomeLive do
 
   def render(assigns) do
     ~H"""
-    <div>Homepage with an interactive running value and a button... <%= @temperature %></div>
-    <button phx-click="inc_temperature">+</button>
+    <div>Echochamber homepage. Discover users etc. <%= @foo %></div>
     """
   end
 
   def mount(_params, _session, socket) do
-    # Let's assume a fixed temperature for now
-    temperature = 70
-    {:ok, assign(socket, :temperature, temperature)}
-  end
-
-  def handle_event("inc_temperature", _params, socket) do
-    {:noreply, update(socket, :temperature, &(&1 + 1))}
+    {:ok, assign(socket, :foo, "")}
   end
 end

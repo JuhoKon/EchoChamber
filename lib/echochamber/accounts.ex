@@ -20,10 +20,24 @@ defmodule Echochamber.Accounts do
 
   defp topic(username), do: "user:#{username}"
 
-  def broadcast_message(%User{} = current_user, msg) do
+  def broadcast_radio_event(%User{} = current_user, %Events.Pause{} = event) do
     broadcast!(
       current_user,
-      %Events.Message{msg: msg}
+      event
+    )
+  end
+
+  def broadcast_radio_event(%User{} = current_user, %Events.Play_Pause{} = event) do
+    broadcast!(
+      current_user,
+      event
+    )
+  end
+
+  def broadcast_radio_event(%User{} = current_user, %Events.Play_Song{} = event) do
+    broadcast!(
+      current_user,
+      event
     )
   end
 
