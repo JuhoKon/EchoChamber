@@ -22,7 +22,7 @@
         <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
           <%= if @current_user do %>
             <.link navigate={home_path(@current_user)} class="hover:text-zinc-700">
-              <%= @current_user.email %>
+              Your chamber
             </.link>
             <.link
               navigate={~p"/users/settings"}

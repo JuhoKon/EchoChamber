@@ -60,7 +60,8 @@ defmodule EchochamberWeb.Router do
     live_session :require_authenticated_user,
                  on_mount: [{EchochamberWeb.UserAuth, :ensure_authenticated}] do
       live "/", HomeLive
-      live "/radio/:user", RadioLive
+      live "/chamber/:user/lobby", Chamber.LobbyLive
+      live "/chamber/:user/admin", Chamber.AdminLive
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
     end

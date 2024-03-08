@@ -1,4 +1,4 @@
-defmodule EchochamberWeb.OnlineLive do
+defmodule EchochamberWeb.SidebarLive do
   use EchochamberWeb, :live_view
   alias Echochamber.Accounts
   on_mount {EchochamberWeb.UserAuth, :mount_current_user}
@@ -12,8 +12,6 @@ defmodule EchochamberWeb.OnlineLive do
   end
 
   def mount(_params, _session, socket) do
-    socket = stream(socket, :presences, [])
-
     socket =
       if connected?(socket) do
         EchochamberWeb.Presence.track_user("online_users", socket.assigns.current_user.email, %{
@@ -22,7 +20,7 @@ defmodule EchochamberWeb.OnlineLive do
 
         EchochamberWeb.Presence.subscribe("online_users")
         Accounts.subscribe(socket.assigns.current_user.id)
-        stream(socket, :presences, EchochamberWeb.Presence.list_online_users())
+        socket
       else
         socket
       end
@@ -37,8 +35,8 @@ defmodule EchochamberWeb.OnlineLive do
 
   def render(assigns) do
     ~H"""
-    <div>
-      <h3 class="text-zinc-900 font-bold p-4 text-center">
+    <div class="w-full">
+      <h3 class="text-zinc-900 font-bold p-4 ml-4">
         Active Users
       </h3>
       <div class="mt-1 space-y-1" role="group">
@@ -64,9 +62,9 @@ defmodule EchochamberWeb.OnlineLive do
     """
   end
 
-  def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
+  def handle_info({EchochamberWeb.Presence, {:join, _presence}}, socket) do
     {:noreply,
-     stream_insert(socket, :presences, presence)
+     socket
      |> assign(
        active_users:
          Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
@@ -76,14 +74,14 @@ defmodule EchochamberWeb.OnlineLive do
   def handle_info({EchochamberWeb.Presence, {:leave, presence}}, socket) do
     if presence.metas == [] do
       {:noreply,
-       stream_delete(socket, :presences, presence)
+       socket
        |> assign(
          active_users:
            Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
        )}
     else
       {:noreply,
-       stream_insert(socket, :presences, presence)
+       socket
        |> assign(
          active_users:
            Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))

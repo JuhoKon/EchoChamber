@@ -11,7 +11,9 @@ const Hooks = {};
 Hooks.AudioPlayer = {
     mounted() {
         this.player = this.el.querySelector('audio');
+        this.player.volume = 0.5; // Set to 50% by default
         this.container = document.getElementById('visual-container');
+        this.slider = document.getElementById('lobby_volume');
         this.setupAudioVisualizer();
         this.handleEvent('play', ({ url }) => {
             const currentSrc = this.player.src;
@@ -28,6 +30,11 @@ Hooks.AudioPlayer = {
             }
         });
         this.handleEvent('pause', () => this.pause());
+        if (this.slider) {
+            this.slider.addEventListener('input', (event) => {
+                this.player.volume = event.target.value / 100;
+            });
+        }
     },
 
     play() {
@@ -68,7 +75,7 @@ Hooks.AudioPlayer = {
             smoothing: 0.7,
             overlay: true,
             showBgColor: true,
-            bgAlpha: 0.02,
+            bgAlpha: 0,
             weightingFilter: 'D'
         });
     }
