@@ -106,6 +106,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
        socket
        |> assign(user: user)
        |> assign(title: "")
+       |> assign(url: "")
        |> assign(playing?: false)
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))}
     end
@@ -119,6 +120,8 @@ defmodule EchochamberWeb.Chamber.AdminLive do
 
     {:noreply,
      socket
+     |> assign(url: url)
+     |> assign(title: title)
      |> assign(playing?: true)}
   end
 
@@ -168,6 +171,15 @@ defmodule EchochamberWeb.Chamber.AdminLive do
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, _presence}}, socket) do
+    %{title: title, url: url} = socket.assigns
+
+    unless url == "" do
+      Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Song{
+        radio_url: url,
+        radio_title: title
+      })
+    end
+
     {:noreply,
      socket
      |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
