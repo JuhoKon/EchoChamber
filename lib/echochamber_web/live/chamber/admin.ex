@@ -12,10 +12,10 @@ defmodule EchochamberWeb.Chamber.AdminLive do
         <audio crossorigin="anonymous"></audio>
       </div>
       <div><%= @user %>'s chamber</div>
-      <div><%= @title %></div>
-      <div><%= @track_title %></div>
+      <div><%= @radio_status.radio_title %></div>
+      <div><%= @radio_status.track_title %></div>
       <div><%= @count %> listeners</div>
-      <%= if @playing? do %>
+      <%= if @radio_status.playing? do %>
         <button phx-click="js_pause">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -107,97 +107,115 @@ defmodule EchochamberWeb.Chamber.AdminLive do
 
       {:ok,
        socket
+       |> assign(
+         radio_status: %{radio_url: nil, radio_title: nil, track_title: nil, playing?: nil}
+       )
        |> assign(user: user)
-       |> assign(title: "")
-       |> assign(url: "")
-       |> assign(playing?: false)
-       |> assign(track_title: "")
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))}
     end
   end
 
   def handle_event("js_play_radio", %{"url" => url, "title" => title}, socket) do
+    %{radio_status: radio_status} = socket.assigns
+    %{track_title: track_title} = radio_status
+
     Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Song{
       radio_url: url,
-      radio_title: title
+      radio_title: title,
+      track_title: track_title
     })
 
     Process.send_after(self(), :get_track_info, 100)
 
-    {:noreply,
-     socket
-     |> assign(url: url)
-     |> assign(title: title)}
+    {:noreply, socket}
   end
 
   def handle_event("js_play", _params, socket) do
-    %{url: url, title: title} = socket.assigns
+    %{radio_status: radio_status} = socket.assigns
+    %{radio_url: radio_url, radio_title: radio_title, track_title: track_title} = radio_status
 
     Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Pause{
-      radio_url: url,
-      radio_title: title
+      radio_url: radio_url,
+      radio_title: radio_title,
+      track_title: track_title
     })
 
     {:noreply, socket}
   end
 
   def handle_event("js_pause", _params, socket) do
+    %{radio_status: radio_status} = socket.assigns
+    %{radio_url: radio_url, radio_title: radio_title, track_title: track_title} = radio_status
+
     Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Pause{
-      radio_url: nil
+      radio_url: radio_url,
+      radio_title: radio_title,
+      track_title: track_title
     })
 
     {:noreply, socket}
   end
 
   def handle_info(
-        {Accounts, %Accounts.Events.Play_Pause{radio_url: url, radio_title: title}},
+        {Accounts, event = %Accounts.Events.Play_Pause{}},
         socket
       ) do
+    %{radio_url: url} = event
+
     {:noreply,
      push_event(socket, "play", %{
        url: url
      })
-     |> assign(playing?: true)
-     |> assign(title: title)}
+     |> assign(radio_status: event)}
   end
 
-  def handle_info({Accounts, %Accounts.Events.Pause{radio_url: url}}, socket) do
+  def handle_info({Accounts, event = %Accounts.Events.Pause{}}, socket) do
+    %{radio_url: url} = event
+
     {:noreply,
      push_event(socket, "pause", %{
        url: url
      })
-     |> assign(playing?: false)}
+     |> assign(radio_status: event)}
   end
 
   def handle_info(
-        {Accounts, %Accounts.Events.Play_Song{radio_url: url, radio_title: title}},
+        {Accounts, event = %Accounts.Events.Play_Song{}},
         socket
       ) do
+    %{radio_url: url} = event
+
     {:noreply,
      push_event(socket, "play", %{
        url: url
      })
-     |> assign(title: title)
-     |> assign(playing?: true)}
+     |> assign(radio_status: event)}
   end
 
   def handle_info(
-        {Accounts, %Accounts.Events.Stop_Song{}},
+        {Accounts, event = %Accounts.Events.Stop_Song{}},
         socket
       ) do
     {:noreply,
      push_event(socket, "stop", %{})
-     |> assign(title: "")
-     |> assign(playing?: false)}
+     |> assign(radio_status: event)}
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, _presence}}, socket) do
-    %{title: title, url: url, playing?: playing?} = socket.assigns
+    %{radio_status: radio_status} = socket.assigns
 
-    if url != "" and playing? do
+    %{
+      radio_url: radio_url,
+      radio_title: radio_title,
+      track_title: track_title,
+      playing?: playing?
+    } = radio_status
+
+    if radio_url != "" and playing? do
       Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Song{
-        radio_url: url,
-        radio_title: title
+        radio_url: radio_url,
+        radio_title: radio_title,
+        track_title: track_title
       })
     end
 
@@ -213,9 +231,15 @@ defmodule EchochamberWeb.Chamber.AdminLive do
   end
 
   def handle_info(:get_track_info, socket) do
-    %{url: url} = socket.assigns
-    {:ok, meta} = Shoutcast.read_meta(url)
+    %{radio_status: radio_status} = socket.assigns
+
+    %{
+      radio_url: radio_url
+    } = radio_status
+
+    {:ok, meta} = Shoutcast.read_meta(radio_url)
+    # meta.data["StreamTitle"]
     Process.send_after(self(), :get_track_info, 5000)
-    {:noreply, assign(socket, :track_title, meta.data["StreamTitle"])}
+    {:noreply, socket}
   end
 end

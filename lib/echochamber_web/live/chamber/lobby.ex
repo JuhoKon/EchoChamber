@@ -15,9 +15,9 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
         <div class="h-96" id="visual-container" phx-update="ignore"></div>
         <h1 class="absolute text-lg text-zinc-900 font-bold top-1/2 left-1/2 w-40 text-center -mx-20">
           <%= cond do %>
-            <% @title == "" -> %>
+            <% @radio_status.radio_title == nil -> %>
               OFFLINE
-            <% @playing? == :false -> %>
+            <% @radio_status.playing? == :false -> %>
               PAUSED
             <% true -> %>
           <% end %>
@@ -37,10 +37,12 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
           <input type="range" id="lobby_volume" name="volume" min="0" max="100" start="50" />
         </div>
       </div>
-      <%= unless @title == "" do %>
-        <h2 class="text-center text-zinc-900 text-4xl"><%= @title %></h2>
-        <div class="text-zinc-500 text-sm text-center pt-2">Now playing</div>
-        <div class="text-center font-bold">Jungle by Arcando</div>
+      <%= unless @radio_status.radio_title == "" do %>
+        <h2 class="text-center text-zinc-900 text-4xl"><%= @radio_status.radio_title %></h2>
+        <%= unless @radio_status.track_title == nil do %>
+          <div class="text-zinc-500 text-sm text-center pt-2">Now playing</div>
+          <div class="text-center font-bold"><%= @radio_status.track_title %></div>
+        <% end %>
       <% end %>
     </div>
     <!-- /lobby player -->
@@ -71,52 +73,56 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
       {:ok,
        socket
        |> assign(user: user)
-       |> assign(title: "")
-       |> assign(playing?: false)
+       |> assign(
+         radio_status: %{radio_url: nil, radio_title: nil, track_title: nil, playing?: nil}
+       )
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))}
     end
   end
 
   def handle_info(
-        {Accounts, %Accounts.Events.Play_Pause{radio_url: url, radio_title: title}},
+        {Accounts, event = %Accounts.Events.Play_Pause{}},
         socket
       ) do
+    %{radio_url: url} = event
+
     {:noreply,
      push_event(socket, "play", %{
        url: url
      })
-     |> assign(playing?: true)
-     |> assign(title: title)}
+     |> assign(radio_status: event)}
   end
 
-  def handle_info({Accounts, %Accounts.Events.Pause{radio_url: url}}, socket) do
+  def handle_info({Accounts, event = %Accounts.Events.Pause{}}, socket) do
+    %{radio_url: url} = event
+
     {:noreply,
      push_event(socket, "pause", %{
        url: url
      })
-     |> assign(playing?: false)}
+     |> assign(radio_status: event)}
   end
 
   def handle_info(
-        {Accounts, %Accounts.Events.Play_Song{radio_url: url, radio_title: title}},
+        {Accounts, event = %Accounts.Events.Play_Song{}},
         socket
       ) do
+    %{radio_url: url} = event
+
     {:noreply,
      push_event(socket, "play", %{
        url: url
      })
-     |> assign(playing?: true)
-     |> assign(title: title)}
+     |> assign(radio_status: event)}
   end
 
   def handle_info(
-        {Accounts, %Accounts.Events.Stop_Song{}},
+        {Accounts, event = %Accounts.Events.Stop_Song{}},
         socket
       ) do
     {:noreply,
      push_event(socket, "stop", %{})
-     |> assign(playing?: false)
-     |> assign(title: "")}
+     |> assign(radio_status: event)}
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
