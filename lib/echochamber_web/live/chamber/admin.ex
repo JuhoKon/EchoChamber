@@ -1,6 +1,7 @@
 defmodule EchochamberWeb.Chamber.AdminLive do
   use EchochamberWeb, :live_view
   alias Echochamber.Accounts
+  alias Echochamber.Shoutcast
 
   def render(assigns) do
     ~H"""
@@ -12,7 +13,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
       </div>
       <div><%= @user %>'s chamber</div>
       <div><%= @title %></div>
-      <div>Jungle by Arcando</div>
+      <div><%= @track_title %></div>
       <div><%= @count %> listeners</div>
       <%= if @playing? do %>
         <button phx-click="js_pause">
@@ -110,6 +111,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
        |> assign(title: "")
        |> assign(url: "")
        |> assign(playing?: false)
+       |> assign(track_title: "")
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))}
     end
   end
@@ -120,6 +122,8 @@ defmodule EchochamberWeb.Chamber.AdminLive do
       radio_title: title
     })
 
+    Process.send_after(self(), :get_track_info, 100)
+
     {:noreply,
      socket
      |> assign(url: url)
@@ -128,6 +132,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
 
   def handle_event("js_play", _params, socket) do
     %{url: url, title: title} = socket.assigns
+
     Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Pause{
       radio_url: url,
       radio_title: title
@@ -144,7 +149,10 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     {:noreply, socket}
   end
 
-  def handle_info({Accounts, %Accounts.Events.Play_Pause{radio_url: url, radio_title: title}}, socket) do
+  def handle_info(
+        {Accounts, %Accounts.Events.Play_Pause{radio_url: url, radio_title: title}},
+        socket
+      ) do
     {:noreply,
      push_event(socket, "play", %{
        url: url
@@ -198,9 +206,16 @@ defmodule EchochamberWeb.Chamber.AdminLive do
      |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
   end
 
-  def handle_info({EchochamberWeb.Presence, {:leave, presence}}, socket) do
+  def handle_info({EchochamberWeb.Presence, {:leave, _presence}}, socket) do
     {:noreply,
      socket
      |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
+  end
+
+  def handle_info(:get_track_info, socket) do
+    %{url: url} = socket.assigns
+    {:ok, meta} = Shoutcast.read_meta(url)
+    Process.send_after(self(), :get_track_info, 5000)
+    {:noreply, assign(socket, :track_title, meta.data["StreamTitle"])}
   end
 end
