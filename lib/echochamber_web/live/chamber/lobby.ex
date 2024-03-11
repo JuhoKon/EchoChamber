@@ -125,6 +125,15 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
      |> assign(radio_status: event)}
   end
 
+  def handle_info(
+        {Accounts, event = %Accounts.Events.Update_Track_Title{}},
+        socket
+      ) do
+    {:noreply,
+     socket
+     |> assign(radio_status: event)}
+  end
+  
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
     {:noreply,
      socket

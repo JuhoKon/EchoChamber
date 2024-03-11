@@ -14,4 +14,8 @@ defmodule Echochamber.Accounts.Events do
   defmodule Stop_Song do
     defstruct radio_url: nil, radio_title: nil, track_title: nil, playing?: false
   end
+
+  defmodule Update_Track_Title do
+    defstruct radio_url: nil, radio_title: nil, track_title: nil, playing?: nil
+  end
 end

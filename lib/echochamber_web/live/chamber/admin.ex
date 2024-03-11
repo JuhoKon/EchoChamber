@@ -201,6 +201,15 @@ defmodule EchochamberWeb.Chamber.AdminLive do
      |> assign(radio_status: event)}
   end
 
+  def handle_info(
+        {Accounts, event = %Accounts.Events.Update_Track_Title{}},
+        socket
+      ) do
+    {:noreply,
+     socket
+     |> assign(radio_status: event)}
+  end
+
   def handle_info({EchochamberWeb.Presence, {:join, _presence}}, socket) do
     %{radio_status: radio_status} = socket.assigns
 
@@ -234,11 +243,29 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     %{radio_status: radio_status} = socket.assigns
 
     %{
-      radio_url: radio_url
+      radio_url: radio_url,
+      radio_title: radio_title,
+      track_title: track_title,
+      playing?: playing?
     } = radio_status
 
     {:ok, meta} = Shoutcast.read_meta(radio_url)
-    # meta.data["StreamTitle"]
+
+    track_title = case meta.data["StreamTitle"] do
+      "" -> nil
+      value -> value
+    end
+    
+    Accounts.broadcast_radio_event(
+      socket.assigns.current_user,
+      %Accounts.Events.Update_Track_Title{
+        radio_url: radio_url,
+        radio_title: radio_title,
+        track_title: track_title,
+        playing?: playing?
+      }
+    )
+
     Process.send_after(self(), :get_track_info, 5000)
     {:noreply, socket}
   end

@@ -48,6 +48,13 @@ defmodule Echochamber.Accounts do
     )
   end
 
+  def broadcast_radio_event(%User{} = current_user, %Events.Update_Track_Title{} = event) do
+    broadcast!(
+      current_user,
+      event
+    )
+  end
+  
   def broadcast!(%User{} = user, msg) do
     Phoenix.PubSub.broadcast!(@pubsub, topic(user.username), {__MODULE__, msg})
   end
