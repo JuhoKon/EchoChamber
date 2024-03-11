@@ -24,12 +24,11 @@ Hooks.AudioPlayer = {
                 this.play();
             }
         });
-        this.handleEvent('play_pause', () => {
-            if (this.player.paused) {
-                this.play();
-            }
-        });
+        
         this.handleEvent('pause', () => this.pause());
+
+        this.handleEvent('stop', () => this.stop());
+
         if (this.slider) {
             this.slider.addEventListener('input', (event) => {
                 this.player.volume = event.target.value / 100;
@@ -48,6 +47,7 @@ Hooks.AudioPlayer = {
     stop() {
         this.player.pause();
     },
+
     setupAudioVisualizer() {
         this.audioVisualizer = new AudioMotionAnalyzer(this.container, {
             source: this.player,

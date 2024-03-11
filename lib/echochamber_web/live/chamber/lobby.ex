@@ -11,7 +11,18 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
       </div>
       <h1 class="text-lg text-zinc-900 font-bold pt-4 text-center"><%= @user %>'s chamber</h1>
       <div class="text-zinc-500 text-sm text-center"><%= @count %> listeners</div>
-      <div class="w-full h-96" id="visual-container" phx-update="ignore"></div>
+      <div class="w-full h-96 relative">
+        <div class="h-96" id="visual-container" phx-update="ignore"></div>
+        <h1 class="absolute text-lg text-zinc-900 font-bold top-1/2 left-1/2 w-40 text-center -mx-20">
+          <%= cond do %>
+            <% @title == "" -> %>
+              OFFLINE
+            <% @playing? == :false -> %>
+              PAUSED
+            <% true -> %>
+          <% end %>
+        </h1>
+      </div>
       <div class="flex items-center justify-end gap-10">
         <div class="flex items-center pr-4 gap-2">
           <svg
@@ -26,9 +37,11 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
           <input type="range" id="lobby_volume" name="volume" min="0" max="100" start="50" />
         </div>
       </div>
-      <h2 class="text-center text-zinc-900 text-4xl"><%= @title %></h2>
-      <div class="text-zinc-500 text-sm text-center pt-2">Now playing</div>
-      <div class="text-center font-bold">Jungle by Arcando</div>
+      <%= unless @title == "" do %>
+        <h2 class="text-center text-zinc-900 text-4xl"><%= @title %></h2>
+        <div class="text-zinc-500 text-sm text-center pt-2">Now playing</div>
+        <div class="text-center font-bold">Jungle by Arcando</div>
+      <% end %>
     </div>
     <!-- /lobby player -->
     """
@@ -58,29 +71,30 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
       {:ok,
        socket
        |> assign(user: user)
-       |> assign(title: "Technobeat")
+       |> assign(title: "")
        |> assign(playing?: false)
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))}
     end
   end
 
-  def handle_event("update_volume", %{"volume" => volume}, socket) do
-    # You can perform any necessary processing here, such as updating the volume value in the assigns
-    {:noreply, assign(socket, volume: volume)}
-  end
-
-  def handle_info({Accounts, %Accounts.Events.Play_Pause{radio_url: url}}, socket) do
+  def handle_info(
+        {Accounts, %Accounts.Events.Play_Pause{radio_url: url, radio_title: title}},
+        socket
+      ) do
     {:noreply,
-     push_event(socket, "play_pause", %{
+     push_event(socket, "play", %{
        url: url
-     })}
+     })
+     |> assign(playing?: true)
+     |> assign(title: title)}
   end
 
   def handle_info({Accounts, %Accounts.Events.Pause{radio_url: url}}, socket) do
     {:noreply,
      push_event(socket, "pause", %{
        url: url
-     })}
+     })
+     |> assign(playing?: false)}
   end
 
   def handle_info(
@@ -91,7 +105,18 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
      push_event(socket, "play", %{
        url: url
      })
+     |> assign(playing?: true)
      |> assign(title: title)}
+  end
+
+  def handle_info(
+        {Accounts, %Accounts.Events.Stop_Song{}},
+        socket
+      ) do
+    {:noreply,
+     push_event(socket, "stop", %{})
+     |> assign(playing?: false)
+     |> assign(title: "")}
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
@@ -101,18 +126,8 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
   end
 
   def handle_info({EchochamberWeb.Presence, {:leave, presence}}, socket) do
-    if presence.metas == [] do
-      {:noreply,
-       socket
-       |> assign(
-         count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user))
-       )}
-    else
-      {:noreply,
-       socket
-       |> assign(
-         count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user))
-       )}
-    end
+    {:noreply,
+     socket
+     |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
   end
 end

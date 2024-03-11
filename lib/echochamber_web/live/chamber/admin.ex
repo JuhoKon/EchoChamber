@@ -45,7 +45,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
           </svg>
         </button>
       <% end %>
-      <div class="flex items-center pr-4 gap-2">
+      <div class="flex items-center pr-4 gap-2" phx-update="ignore" id="admin-player">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -102,6 +102,8 @@ defmodule EchochamberWeb.Chamber.AdminLive do
 
       Accounts.subscribe(user)
 
+      Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Stop_Song{})
+
       {:ok,
        socket
        |> assign(user: user)
@@ -121,18 +123,17 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     {:noreply,
      socket
      |> assign(url: url)
-     |> assign(title: title)
-     |> assign(playing?: true)}
+     |> assign(title: title)}
   end
 
   def handle_event("js_play", _params, socket) do
+    %{url: url, title: title} = socket.assigns
     Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Pause{
-      radio_url: nil
+      radio_url: url,
+      radio_title: title
     })
 
-    {:noreply,
-     socket
-     |> assign(playing?: true)}
+    {:noreply, socket}
   end
 
   def handle_event("js_pause", _params, socket) do
@@ -140,23 +141,24 @@ defmodule EchochamberWeb.Chamber.AdminLive do
       radio_url: nil
     })
 
-    {:noreply,
-     socket
-     |> assign(playing?: false)}
+    {:noreply, socket}
   end
 
-  def handle_info({Accounts, %Accounts.Events.Play_Pause{radio_url: url}}, socket) do
+  def handle_info({Accounts, %Accounts.Events.Play_Pause{radio_url: url, radio_title: title}}, socket) do
     {:noreply,
-     push_event(socket, "play_pause", %{
+     push_event(socket, "play", %{
        url: url
-     })}
+     })
+     |> assign(playing?: true)
+     |> assign(title: title)}
   end
 
   def handle_info({Accounts, %Accounts.Events.Pause{radio_url: url}}, socket) do
     {:noreply,
      push_event(socket, "pause", %{
        url: url
-     })}
+     })
+     |> assign(playing?: false)}
   end
 
   def handle_info(
@@ -167,13 +169,24 @@ defmodule EchochamberWeb.Chamber.AdminLive do
      push_event(socket, "play", %{
        url: url
      })
-     |> assign(title: title)}
+     |> assign(title: title)
+     |> assign(playing?: true)}
+  end
+
+  def handle_info(
+        {Accounts, %Accounts.Events.Stop_Song{}},
+        socket
+      ) do
+    {:noreply,
+     push_event(socket, "stop", %{})
+     |> assign(title: "")
+     |> assign(playing?: false)}
   end
 
   def handle_info({EchochamberWeb.Presence, {:join, _presence}}, socket) do
-    %{title: title, url: url} = socket.assigns
+    %{title: title, url: url, playing?: playing?} = socket.assigns
 
-    unless url == "" do
+    if url != "" and playing? do
       Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Song{
         radio_url: url,
         radio_title: title
@@ -186,18 +199,8 @@ defmodule EchochamberWeb.Chamber.AdminLive do
   end
 
   def handle_info({EchochamberWeb.Presence, {:leave, presence}}, socket) do
-    if presence.metas == [] do
-      {:noreply,
-       socket
-       |> assign(
-         count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user))
-       )}
-    else
-      {:noreply,
-       socket
-       |> assign(
-         count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user))
-       )}
-    end
+    {:noreply,
+     socket
+     |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(socket.assigns.user)))}
   end
 end
