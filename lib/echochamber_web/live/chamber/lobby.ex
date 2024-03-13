@@ -6,12 +6,12 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
     ~H"""
     <!-- lobby player -->
     <div id="audio-player" phx-hook="AudioPlayer" class="w-full" role="region" aria-label="Player">
-      <div id="audio-ignore" phx-update="ignore">
-        <audio crossorigin="anonymous"></audio>
-      </div>
       <h1 class="text-lg text-zinc-900 font-bold pt-4 text-center"><%= @user %>'s chamber</h1>
       <div class="text-zinc-500 text-sm text-center"><%= @count %> listeners</div>
-      <div class="w-full h-96 relative">
+      <div id="lobby-visualizer" phx-hook="AudioMotionAnalyzerLobby" class="w-full h-96 relative">
+        <div id="audio-ignore" phx-update="ignore">
+          <audio crossorigin="anonymous"></audio>
+        </div>
         <div class="h-96" id="visual-container" phx-update="ignore"></div>
         <h1 class="absolute text-lg text-zinc-900 font-bold top-1/2 left-1/2 w-40 text-center -mx-20">
           <%= cond do %>
@@ -133,7 +133,7 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
      socket
      |> assign(radio_status: event)}
   end
-  
+
   def handle_info({EchochamberWeb.Presence, {:join, presence}}, socket) do
     {:noreply,
      socket

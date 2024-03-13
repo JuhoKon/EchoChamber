@@ -7,7 +7,13 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     ~H"""
     <!-- admin player -->
     <div id="audio-player" phx-hook="AudioPlayer" class="w-full" role="region" aria-label="Player">
-      <div class="w-full h-48" id="visual-container" phx-update="ignore"></div>
+      <div id="admin-visualizer" phx-hook="AudioMotionAnalyzerAdmin">
+        <div class="w-full h-48" id="visual-container" phx-update="ignore">
+          <div id="audio-ignore" phx-update="ignore">
+            <audio crossorigin="anonymous"></audio>
+          </div>
+        </div>
+      </div>
 
       <h1 class="text-lg text-zinc-900 font-bold">
         <%= cond do %>
@@ -19,10 +25,6 @@ defmodule EchochamberWeb.Chamber.AdminLive do
             You're ONLINE
         <% end %>
       </h1>
-
-      <div id="audio-ignore" phx-update="ignore">
-        <audio crossorigin="anonymous"></audio>
-      </div>
 
       <div>Radio: <%= @radio_status.radio_title %></div>
       <div>Current track: <%= @radio_status.track_title %></div>
@@ -285,6 +287,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     # TODO handle
     {:noreply, socket}
   end
+
   def handle_async(:get_track_info, {:ok, track_title}, socket) do
     %{radio_status: radio_status} = socket.assigns
 

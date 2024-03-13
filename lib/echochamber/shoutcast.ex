@@ -2,17 +2,18 @@ defmodule Echochamber.Shoutcast do
   # Source: https://stackoverflow.com/questions/48242966/elixir-fetching-metadata-from-shoutcast
   defmodule Meta do
     defstruct [:offset, :length, :data, :raw, :string]
+
     @type t :: %__MODULE__{
-      data: map,
-      offset: integer,
-      length: integer,
-      raw: binary,
-      string: String.t
-    }
+            data: map,
+            offset: integer,
+            length: integer,
+            raw: binary,
+            string: String.t()
+          }
   end
 
   def read_meta(url) do
-    {:ok, _status, headers, ref} = :hackney.get(url, [{'Icy-Metadata', '1'}], "", [])
+    {:ok, _status, headers, ref} = :hackney.get(url, [{~c"Icy-Metadata", ~c"1"}], "", [])
 
     offset = get_offset(headers)
 
@@ -21,21 +22,20 @@ defmodule Echochamber.Shoutcast do
     {meta_length, meta} = extract_meta(data, offset)
 
     {:ok,
-      %Meta{
-        data: process_meta(meta),
-        offset: offset,
-        length: meta_length,
-        raw: meta,
-        string: String.trim(meta, <<0>>)
-      }
-    }
+     %Meta{
+       data: process_meta(meta),
+       offset: offset,
+       length: meta_length,
+       raw: meta,
+       string: String.trim(meta, <<0>>)
+     }}
   end
 
   # Stream the body until we get what we want.
   defp read_body(max_length, ref, acc) when max_length > byte_size(acc) do
     case :hackney.stream_body(ref) do
-      {:ok, data}      -> read_body(max_length, ref, <<acc::binary, data::binary>>)
-      :done            -> {:ok, acc}
+      {:ok, data} -> read_body(max_length, ref, <<acc::binary, data::binary>>)
+      :done -> {:ok, acc}
       {:error, reason} -> {:error, reason}
     end
   end
@@ -52,14 +52,14 @@ defmodule Echochamber.Shoutcast do
 
   # Extract the meta data from the binary file stream.
   defp extract_meta(data, offset) do
-    << _::binary-size(offset), length::binary-size(1), chunk::binary >> = data
+    <<_::binary-size(offset), length::binary-size(1), chunk::binary>> = data
 
     # The `length` byte will equal the metadata length/16.
     # Multiply by 16 to get the actual metadata length.
     <<l>> = length
     meta_length = l * 16
 
-    << meta::binary-size(meta_length), _::binary >> = chunk
+    <<meta::binary-size(meta_length), _::binary>> = chunk
 
     {meta_length, meta}
   end
