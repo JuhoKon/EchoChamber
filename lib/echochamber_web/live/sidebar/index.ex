@@ -3,14 +3,6 @@ defmodule EchochamberWeb.SidebarLive do
   alias Echochamber.Accounts
   on_mount {EchochamberWeb.UserAuth, :mount_current_user}
 
-  defp add_listeners_to_user(user) do
-    Map.put(
-      user,
-      :listeners,
-      Enum.count(EchochamberWeb.Presence.list_profile_users(user.user.username))
-    )
-  end
-
   def mount(_params, _session, socket) do
     socket =
       if connected?(socket) do
@@ -27,12 +19,10 @@ defmodule EchochamberWeb.SidebarLive do
 
     {:ok,
      socket
-     |> assign(
-       active_users:
-         Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
-     )}
+     |> assign(active_users: EchochamberWeb.Presence.list_online_users()), layout: false}
   end
 
+  # TODO Show users that have an active broadcast. Should be stored in db. Could move away from presence to some sort of interval implementation.
   def render(assigns) do
     ~H"""
     <div class="w-full">
@@ -53,7 +43,6 @@ defmodule EchochamberWeb.SidebarLive do
               <span class="truncate">
                 <%= user.user.username %>
               </span>
-              <span class="text-zinc-500 text-sm"><%= user.listeners %> listener(s)</span>
             </div>
           </.link>
         <% end %>
@@ -65,27 +54,12 @@ defmodule EchochamberWeb.SidebarLive do
   def handle_info({EchochamberWeb.Presence, {:join, _presence}}, socket) do
     {:noreply,
      socket
-     |> assign(
-       active_users:
-         Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
-     )}
+     |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
   end
 
-  def handle_info({EchochamberWeb.Presence, {:leave, presence}}, socket) do
-    if presence.metas == [] do
-      {:noreply,
-       socket
-       |> assign(
-         active_users:
-           Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
-       )}
-    else
-      {:noreply,
-       socket
-       |> assign(
-         active_users:
-           Enum.map(EchochamberWeb.Presence.list_online_users(), &add_listeners_to_user(&1))
-       )}
-    end
+  def handle_info({EchochamberWeb.Presence, {:leave, _presence}}, socket) do
+    {:noreply,
+     socket
+     |> assign(active_users: EchochamberWeb.Presence.list_online_users())}
   end
 end

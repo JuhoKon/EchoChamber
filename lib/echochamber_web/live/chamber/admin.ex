@@ -8,44 +8,61 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     <!-- admin player -->
     <div id="audio-player" phx-hook="AudioPlayer" class="w-full" role="region" aria-label="Player">
       <div class="w-full h-48" id="visual-container" phx-update="ignore"></div>
+
+      <h1 class="text-lg text-zinc-900 font-bold">
+        <%= cond do %>
+          <% @radio_status.radio_title == nil -> %>
+            You're OFFLINE
+          <% @radio_status.playing? == :false -> %>
+            You're PAUSED
+          <% true -> %>
+            You're ONLINE
+        <% end %>
+      </h1>
+
       <div id="audio-ignore" phx-update="ignore">
         <audio crossorigin="anonymous"></audio>
       </div>
-      <div><%= @user %>'s chamber</div>
-      <div><%= @radio_status.radio_title %></div>
-      <div><%= @radio_status.track_title %></div>
+
+      <div>Radio: <%= @radio_status.radio_title %></div>
+      <div>Current track: <%= @radio_status.track_title %></div>
       <div><%= @count %> listeners</div>
-      <%= if @radio_status.playing? do %>
-        <button phx-click="js_pause">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-8 h-8"
+      <div class="flex justify-center content-center">
+        <%= if @radio_status.playing? do %>
+          <button phx-click="js_pause">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-8 h-8"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M6.75 5.25a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V5.25Zm7.5 0A.75.75 0 0 1 15 4.5h1.5a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H15a.75.75 0 0 1-.75-.75V5.25Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        <% else %>
+          <button
+            phx-click="js_play"
+            disabled={if @radio_status.radio_url == nil, do: true, else: false}
           >
-            <path
-              fill-rule="evenodd"
-              d="M6.75 5.25a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H7.5a.75.75 0 0 1-.75-.75V5.25Zm7.5 0A.75.75 0 0 1 15 4.5h1.5a.75.75 0 0 1 .75.75v13.5a.75.75 0 0 1-.75.75H15a.75.75 0 0 1-.75-.75V5.25Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-      <% else %>
-        <button phx-click="js_play">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="w-8 h-8"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </button>
-      <% end %>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-8 h-8"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+        <% end %>
+      </div>
       <div class="flex items-center pr-4 gap-2" phx-update="ignore" id="admin-player">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -242,31 +259,55 @@ defmodule EchochamberWeb.Chamber.AdminLive do
   def handle_info(:get_track_info, socket) do
     %{radio_status: radio_status} = socket.assigns
 
+    %{radio_url: radio_url} = radio_status
+
+    {:noreply,
+     socket
+     |> start_async(:get_track_info, fn ->
+       {:ok, meta} = Shoutcast.read_meta(radio_url)
+
+       track_title =
+         case meta.data["StreamTitle"] do
+           "" -> nil
+           value -> value
+         end
+
+       track_title
+     end)}
+  end
+
+  def handle_async(:get_track_info, {:ok, {:error, _reason}}, socket) do
+    # TODO handle
+    {:noreply, socket}
+  end
+
+  def handle_async(:get_track_info, {:exit, _reason}, socket) do
+    # TODO handle
+    {:noreply, socket}
+  end
+  def handle_async(:get_track_info, {:ok, track_title}, socket) do
+    %{radio_status: radio_status} = socket.assigns
+
     %{
       radio_url: radio_url,
       radio_title: radio_title,
-      track_title: track_title,
       playing?: playing?
     } = radio_status
 
-    {:ok, meta} = Shoutcast.read_meta(radio_url)
-
-    track_title = case meta.data["StreamTitle"] do
-      "" -> nil
-      value -> value
+    if track_title do
+      Accounts.broadcast_radio_event(
+        socket.assigns.current_user,
+        %Accounts.Events.Update_Track_Title{
+          radio_url: radio_url,
+          radio_title: radio_title,
+          track_title: track_title,
+          playing?: playing?
+        }
+      )
     end
-    
-    Accounts.broadcast_radio_event(
-      socket.assigns.current_user,
-      %Accounts.Events.Update_Track_Title{
-        radio_url: radio_url,
-        radio_title: radio_title,
-        track_title: track_title,
-        playing?: playing?
-      }
-    )
 
     Process.send_after(self(), :get_track_info, 5000)
+
     {:noreply, socket}
   end
 end
