@@ -25,18 +25,18 @@ defmodule EchochamberWeb.SidebarLive do
   # TODO Show users that have an active broadcast. Should be stored in db. Could move away from presence to some sort of interval implementation.
   def render(assigns) do
     ~H"""
-    <div class="w-full">
-      <h3 class="text-zinc-900 font-bold p-4 ml-4">
+    <div class="w-full text-black font-light">
+      <h3 class="p-4 pl-0 ml-4 text-base">
         Active Users
       </h3>
       <div class="mt-1 space-y-1" role="group">
         <%= for user <- @active_users do %>
           <.link
             navigate={home_path(user.user)}
-            class="group flex items-center px-3 py-2 text-base leading-5 font-medium text-zinc-900 rounded-md hover:text-gray-900 gap-4"
+            class="text-sm group flex items-center pl-5 px-3 py-2 text-base leading-5 rounded-md gap-4"
           >
             <img
-              class="h-10"
+              class="h-6"
               src="https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg"
             />
             <div class="flex flex-col">
