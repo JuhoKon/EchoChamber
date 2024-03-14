@@ -26,8 +26,8 @@ defmodule EchochamberWeb.SidebarLive do
   def render(assigns) do
     ~H"""
     <div class="w-full text-black font-light">
-      <h3 class="p-4 pl-0 ml-4 text-base">
-        Active Users
+      <h3 class="pt-6 p-4 pl-0 ml-4 text-sm">
+        ACTIVE USERS
       </h3>
       <div class="mt-1 space-y-1" role="group">
         <%= for user <- @active_users do %>
