@@ -123,6 +123,14 @@ defmodule EchochamberWeb.Chamber.AdminLive do
             >
               Technobeat
             </button>
+            <button
+              class="p-5 bg-blue-100"
+              phx-click="js_play_radio"
+              phx-value-url="https://uk2.internet-radio.com/proxy/danceradiouk?mp=/stream"
+              phx-value-title="Dance UK Radio danceradiouk"
+            >
+              Dance UK Radio danceradiouk
+            </button>
           </div>
         </div>
       </div>
@@ -171,7 +179,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Song{
       radio_url: url,
       radio_title: title,
-      track_title: track_title
+      track_title: "Unknown track"
     })
 
     Process.send_after(self(), :get_track_info, 100)
