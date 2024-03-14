@@ -47,7 +47,7 @@ defmodule EchochamberWeb.SidebarLive do
               </div>
             <% else %>
               <div class="flex flex-col">
-                <span class="truncate">
+                <span class="line-clamp-1">
                   <%= user.user.username %>
                 </span>
               </div>
