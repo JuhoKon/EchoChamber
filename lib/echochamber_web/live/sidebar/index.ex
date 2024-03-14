@@ -33,17 +33,25 @@ defmodule EchochamberWeb.SidebarLive do
         <%= for user <- @active_users do %>
           <.link
             navigate={home_path(user.user)}
-            class="text-sm group flex items-center pl-5 px-3 py-2 text-base leading-5 rounded-md gap-4"
+            class="text-base group flex items-center pl-5 px-3 py-2 text-base leading-5 rounded-md gap-4"
           >
             <img
               class="h-6"
               src="https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg"
             />
-            <div class="flex flex-col">
-              <span class="truncate">
-                <%= user.user.username %>
-              </span>
-            </div>
+            <%= if @current_user.username == user.user.username do %>
+              <div class="flex flex-col">
+                <span class="line-clamp-1">
+                  <%= user.user.username %> (you)
+                </span>
+              </div>
+            <% else %>
+              <div class="flex flex-col">
+                <span class="truncate">
+                  <%= user.user.username %>
+                </span>
+              </div>
+            <% end %>
           </.link>
         <% end %>
       </div>
