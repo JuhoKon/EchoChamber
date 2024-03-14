@@ -69,7 +69,12 @@ defmodule EchochamberWeb.Chamber.AdminLive do
               <span class="font-bold">Radio:</span> <%= @radio_status.radio_title %>
             </div>
             <div class="text-lg text-black text-center">
-              <span class="font-bold">Current track:</span> <%= @radio_status.track_title %>
+              <span class="font-bold">Current track:</span>
+              <%= if @radio_status.track_title == nil do %>
+                Unknown track
+              <% else %>
+                <%= @radio_status.track_title %>
+              <% end %>
             </div>
 
             <h1 class="text-lg text-black font-bold text-center">
