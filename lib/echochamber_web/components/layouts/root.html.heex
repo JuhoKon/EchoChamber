@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" class="[scrollbar-gutter:stable]">
   <head>
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Nosifer&display=swap" rel="stylesheet" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
@@ -12,43 +17,31 @@
     </script>
   </head>
   <body class="bg-white antialiased">
-    <header class="px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
-        <div class="flex items-center gap-4">
-          <p class=" leading-6 text-zinc-900 font-bold hover:text-zinc-700">
-            <.link navigate={~p"/"}> Echochamber </.link>
+    <header class="px-4 sm:px-6 lg:px-8 border-b border-black">
+      <div class="h-20 flex items-center justify-between">
+        <.link class="flex items-center gap-4" navigate={~p"/"}>
+          <img src={~p"/images/logo.png"} width="64" />
+          <p class="text-2xl font-nosifer leading-6 text-black font-bold">
+            Echochamber
           </p>
-        </div>
-        <div class="flex items-center gap-4 font-semibold leading-6 text-zinc-900">
+        </.link>
+        <div class="text-xl text-black flex items-center gap-8 leading-6">
           <%= if @current_user do %>
-            <.link navigate={home_path(@current_user)} class="hover:text-zinc-700">
+            <.link navigate={home_path(@current_user)}>
               Your chamber
             </.link>
-            <.link
-              navigate={~p"/users/settings"}
-              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-            >
+            <.link navigate={~p"/users/settings"}>
               Settings
             </.link>
-            <.link
-              href={~p"/users/log_out"}
-              method="delete"
-              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-            >
+            <.link href={~p"/users/log_out"} method="delete">
               Log out
             </.link>
           <% else %>
-            <.link
-              navigate={~p"/users/register"}
-              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-            >
+            <.link navigate={~p"/users/register"}>
               Register
             </.link>
 
-            <.link
-              navigate={~p"/users/log_in"}
-              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-            >
+            <.link navigate={~p"/users/log_in"}>
               Log in
             </.link>
           <% end %>

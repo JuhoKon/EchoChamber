@@ -15,7 +15,11 @@ module.exports = {
         extend: {
             colors: {
                 brand: '#FD4F00'
-            }
+            },
+            fontFamily: {
+                'sans': ['"IBM Plex Mono"', 'monospace'],
+                nosifer: ['Nosifer', 'cursive'],
+            },
         }
     },
     plugins: [
