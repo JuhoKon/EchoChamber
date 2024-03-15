@@ -1,5 +1,7 @@
 defmodule EchochamberWeb.Chamber.AdminLive do
   use EchochamberWeb, :live_view
+  use Timex
+
   alias Echochamber.Accounts
   alias Echochamber.Shoutcast
 
@@ -24,6 +26,19 @@ defmodule EchochamberWeb.Chamber.AdminLive do
 
       <div class="text-black text-sm text-center py-2">
         You have: <%= @count %> listeners (including you)
+      </div>
+
+      <div class="flex items-center pr-4 gap-2" phx-update="ignore" id="admin-player">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="w-6 h-6"
+        >
+          <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06Z" />
+          <path d="M15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z" />
+        </svg>
+        <input type="range" id="lobby_volume" name="volume" min="0" max="100" start="50" />
       </div>
 
       <div class="flex justify-center content-center mt-2">
@@ -63,8 +78,8 @@ defmodule EchochamberWeb.Chamber.AdminLive do
         <% end %>
       </div>
       <div class="flex justify-between mt-4 flex-wrap grow">
-        <div class="flex flex-col basis-[48%] gap-8 h-full">
-          <div class="flex flex-col gap-4 border border-black h-3/4 pt-4 px-2">
+        <div class="flex flex-col basis-[48%] gap-8">
+          <div class="flex flex-col gap-4 border border-black py-4 px-2">
             <div class="text-lg text-black text-center">
               <span class="font-bold">Radio:</span> <%= @radio_status.radio_title %>
             </div>
@@ -89,18 +104,61 @@ defmodule EchochamberWeb.Chamber.AdminLive do
             </h1>
           </div>
           <div class="border border-black h-full">
-            History
-            <div class="flex items-center pr-4 gap-2" phx-update="ignore" id="admin-player">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="w-6 h-6"
-              >
-                <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06Z" />
-                <path d="M15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z" />
-              </svg>
-              <input type="range" id="lobby_volume" name="volume" min="0" max="100" start="50" />
+            <div class="text-lg text-black text-center mt-4">
+              <span class="font-bold">History:</span> Last 25 tracks
+            </div>
+            <div class="h-96 overflow-auto mt-4">
+              <table class="min-w-full divide-y">
+                <thead>
+                  <tr>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider"
+                    >
+                      #
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider"
+                    >
+                      Track Title
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider"
+                    >
+                      Radio Name
+                    </th>
+                    <th
+                      scope="col"
+                      class="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider"
+                    >
+                      Played At
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y">
+                  <%= for {history_item, index} <- Enum.with_index(@history, 1) do %>
+                    <tr>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <%= index %>.
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-pretty max-w-40">
+                        <%= history_item.track_title %>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <%= history_item.radio_title %>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <%= case history_item.track_played_at |> Timex.local() |> Timex.format("%H:%M:%S", :strftime) do
+                          {:ok, formatted_string} -> formatted_string
+                          _ -> "Unknown time"
+                            end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -167,6 +225,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
        |> assign(
          radio_status: %{radio_url: nil, radio_title: nil, track_title: nil, playing?: nil}
        )
+       |> assign(history: [])
        |> assign(user: user)
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))}
     end
@@ -335,20 +394,52 @@ defmodule EchochamberWeb.Chamber.AdminLive do
       playing?: playing?
     } = radio_status
 
-    if track_title do
-      Accounts.broadcast_radio_event(
-        socket.assigns.current_user,
-        %Accounts.Events.Update_Track_Title{
-          radio_url: radio_url,
-          radio_title: radio_title,
-          track_title: track_title,
-          playing?: playing?
-        }
-      )
-    end
+    new_socket =
+      if track_title not in [nil, ""] do
+        Accounts.broadcast_radio_event(
+          socket.assigns.current_user,
+          %Accounts.Events.Update_Track_Title{
+            radio_url: radio_url,
+            radio_title: radio_title,
+            track_title: track_title,
+            playing?: playing?
+          }
+        )
+
+        update_history(track_title, radio_title, socket)
+      else
+        socket
+      end
 
     Process.send_after(self(), :get_track_info, 5000)
 
-    {:noreply, socket}
+    {:noreply, new_socket}
+  end
+
+  defp update_history(track_title, radio_title, socket) do
+    history = socket.assigns.history || []
+
+    # Check if the track is already the most recent in the history
+    is_new_track =
+      case history do
+        [%{track_title: first_track_title} | _] -> first_track_title != track_title
+        _ -> true
+      end
+
+    if is_new_track do
+      new_history_item = %{
+        radio_title: radio_title,
+        track_title: track_title,
+        track_played_at: Timex.now()
+      }
+
+      # Prepend the new item and trim the history to the latest 25 entries
+      new_history = [new_history_item | history] |> Enum.take(25)
+
+      # Update the socket assigns with the new history
+      assign(socket, :history, new_history)
+    else
+      socket
+    end
   end
 end
