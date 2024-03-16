@@ -53,7 +53,7 @@ defmodule EchochamberWeb do
     quote do
       use Phoenix.LiveView,
         layout: {EchochamberWeb.Layouts, :app},
-        container: {:div, class: "flex"}
+        container: {:div, class: "flex h-[calc(100vh-5rem)]"}
 
       unquote(html_helpers())
     end

@@ -77,8 +77,8 @@ defmodule EchochamberWeb.Chamber.AdminLive do
           </button>
         <% end %>
       </div>
-      <div class="flex justify-between mt-4 flex-wrap grow">
-        <div class="flex flex-col basis-[48%] gap-8">
+      <div class="flex justify-between mt-4 flex-wrap grow min-h-0">
+        <div class="flex flex-col basis-[48%] gap-8 h-full">
           <div class="flex flex-col gap-4 border border-black py-4 px-2">
             <div class="text-lg text-black text-center">
               <span class="font-bold">Radio:</span> <%= @radio_status.radio_title %>
@@ -103,11 +103,11 @@ defmodule EchochamberWeb.Chamber.AdminLive do
               <% end %>
             </h1>
           </div>
-          <div class="border border-black h-full">
+          <div class="border border-black h-full flex flex-col min-h-0">
             <div class="text-lg text-black text-center mt-4">
               <span class="font-bold">History:</span> Last 25 tracks
             </div>
-            <div class="h-96 overflow-auto mt-4">
+            <div class="h-full overflow-auto mt-4">
               <table class="min-w-full divide-y">
                 <thead>
                   <tr>
@@ -162,9 +162,57 @@ defmodule EchochamberWeb.Chamber.AdminLive do
             </div>
           </div>
         </div>
-        <div class="border border-black basis-[48%]">
+        <div class="border border-black basis-[48%] h-full overflow-auto">
           <div class="flex flex-col w-fit gap-2 mt-2">
             Radios:
+            <button
+              class="p-5 bg-blue-100"
+              phx-click="js_play_radio"
+              phx-value-url="https://uk3.internet-radio.com/proxy/co9?mp=/stream"
+              phx-value-title="UK 3"
+            >
+              UK 3
+            </button>
+            <button
+              class="p-5 bg-blue-100"
+              phx-click="js_play_radio"
+              phx-value-url="https://technobeat.stream.laut.fm/technobeat"
+              phx-value-title="Technobeat"
+            >
+              Technobeat
+            </button>
+            <button
+              class="p-5 bg-blue-100"
+              phx-click="js_play_radio"
+              phx-value-url="https://uk2.internet-radio.com/proxy/danceradiouk?mp=/stream"
+              phx-value-title="Dance UK Radio danceradiouk"
+            >
+              Dance UK Radio danceradiouk
+            </button>
+            <button
+              class="p-5 bg-blue-100"
+              phx-click="js_play_radio"
+              phx-value-url="https://uk3.internet-radio.com/proxy/co9?mp=/stream"
+              phx-value-title="UK 3"
+            >
+              UK 3
+            </button>
+            <button
+              class="p-5 bg-blue-100"
+              phx-click="js_play_radio"
+              phx-value-url="https://technobeat.stream.laut.fm/technobeat"
+              phx-value-title="Technobeat"
+            >
+              Technobeat
+            </button>
+            <button
+              class="p-5 bg-blue-100"
+              phx-click="js_play_radio"
+              phx-value-url="https://uk2.internet-radio.com/proxy/danceradiouk?mp=/stream"
+              phx-value-title="Dance UK Radio danceradiouk"
+            >
+              Dance UK Radio danceradiouk
+            </button>
             <button
               class="p-5 bg-blue-100"
               phx-click="js_play_radio"
