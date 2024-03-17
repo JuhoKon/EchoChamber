@@ -11,7 +11,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     <div
       id="audio-player"
       phx-hook="AudioPlayer"
-      class="w-full h-full px-8 py-4 flex flex-col"
+      class="w-full h-full px-4 py-4 flex flex-col"
       role="region"
       aria-label="Player"
     >
@@ -22,33 +22,32 @@ defmodule EchochamberWeb.Chamber.AdminLive do
           </div>
         </div>
       </div>
-      <h1 class="text-xl text-black text-center font-bold">Hello, <%= @current_user.username %></h1>
+      <h1 class="text-lg text-black text-center font-bold">Hello, <%= @current_user.username %></h1>
 
-      <div class="text-black text-sm text-center py-2">
+      <div class="text-black text-xs text-center py-2">
         You have: <%= @count %> listeners (including you)
       </div>
 
-      <div class="flex items-center pr-4 gap-2" phx-update="ignore" id="admin-player">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          class="w-6 h-6"
-        >
-          <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06Z" />
-          <path d="M15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z" />
-        </svg>
-        <input type="range" id="lobby_volume" name="volume" min="0" max="100" start="50" />
-      </div>
-
-      <div class="flex justify-center content-center mt-2">
+      <div class="flex justify-between content-center mt-2">
+        <div class="flex items-center gap-2 flex-1" phx-update="ignore" id="admin-player">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="w-6 h-6"
+          >
+            <path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06Z" />
+            <path d="M15.932 7.757a.75.75 0 0 1 1.061 0 6 6 0 0 1 0 8.486.75.75 0 0 1-1.06-1.061 4.5 4.5 0 0 0 0-6.364.75.75 0 0 1 0-1.06Z" />
+          </svg>
+          <input type="range" id="lobby_volume" name="volume" min="0" max="100" start="50" />
+        </div>
         <%= if @radio_status.playing? do %>
           <button phx-click="js_pause">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              class="w-16 h-16"
+              class="w-12 h-12"
             >
               <path
                 fill-rule="evenodd"
@@ -66,7 +65,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               fill="currentColor"
-              class="w-16 h-16"
+              class="w-12 h-12"
             >
               <path
                 fill-rule="evenodd"
@@ -76,14 +75,15 @@ defmodule EchochamberWeb.Chamber.AdminLive do
             </svg>
           </button>
         <% end %>
+        <div class="flex-1"></div>
       </div>
       <div class="flex justify-between mt-4 flex-wrap grow min-h-0">
-        <div class="flex flex-col basis-[48%] gap-8 h-full">
-          <div class="flex flex-col gap-4 border border-black py-4 px-2">
-            <div class="text-lg text-black text-center">
+        <div class="flex flex-col basis-[48%] gap-4 h-full">
+          <div class="flex flex-col gap-4 border border-zinc-300 py-4 px-2">
+            <div class="text-base text-black text-center">
               <span class="font-bold">Radio:</span> <%= @radio_status.radio_title %>
             </div>
-            <div class="text-lg text-black text-center">
+            <div class="text-base text-black text-center">
               <span class="font-bold">Current track:</span>
               <%= if @radio_status.track_title == nil do %>
                 Unknown track
@@ -92,7 +92,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
               <% end %>
             </div>
 
-            <h1 class="text-lg text-black font-bold text-center">
+            <h1 class="text-base text-black font-bold text-center">
               <%= cond do %>
                 <% @radio_status.radio_title == nil -> %>
                   Status: Offline
@@ -103,8 +103,8 @@ defmodule EchochamberWeb.Chamber.AdminLive do
               <% end %>
             </h1>
           </div>
-          <div class="border border-black h-full flex flex-col min-h-0">
-            <div class="text-lg text-black text-center mt-4">
+          <div class="border border-zinc-300 h-full flex flex-col min-h-0">
+            <div class="text-base text-black text-center mt-4">
               <span class="font-bold">History:</span> Last 25 tracks
             </div>
             <div class="h-full overflow-auto mt-4">
@@ -113,25 +113,25 @@ defmodule EchochamberWeb.Chamber.AdminLive do
                   <tr>
                     <th
                       scope="col"
-                      class="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider"
+                      class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
                     >
                       #
                     </th>
                     <th
                       scope="col"
-                      class="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider"
+                      class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
                     >
                       Track Title
                     </th>
                     <th
                       scope="col"
-                      class="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider"
+                      class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
                     >
                       Radio Name
                     </th>
                     <th
                       scope="col"
-                      class="px-6 py-3 text-left text-sm font-semibold text-gray-800 uppercase tracking-wider"
+                      class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
                     >
                       Played At
                     </th>
@@ -140,20 +140,22 @@ defmodule EchochamberWeb.Chamber.AdminLive do
                 <tbody class="divide-y">
                   <%= for {history_item, index} <- Enum.with_index(@history, 1) do %>
                     <tr>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td class="px-6 py-4 whitespace-nowrap text-xs font-medium">
                         <%= index %>.
                       </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-pretty max-w-40">
+                      <td class="px-6 py-4 whitespace-nowrap text-xs text-pretty max-w-40">
                         <%= history_item.track_title %>
                       </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm">
+                      <td class="px-6 py-4 whitespace-nowrap text-xs">
                         <%= history_item.radio_title %>
                       </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm">
-                        <%= case history_item.track_played_at |> Timex.local() |> Timex.format("%H:%M:%S", :strftime) do
+                      <td class="px-6 py-4 whitespace-nowrap text-xs">
+                        <%= case history_item.track_played_at
+                                 |> Timex.local()
+                                 |> Timex.format("%H:%M:%S", :strftime) do
                           {:ok, formatted_string} -> formatted_string
                           _ -> "Unknown time"
-                            end %>
+                        end %>
                       </td>
                     </tr>
                   <% end %>
@@ -162,7 +164,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
             </div>
           </div>
         </div>
-        <div class="border border-black basis-[48%] h-full overflow-auto">
+        <div class="border border-zinc-300 basis-[48%] h-full overflow-auto">
           <div class="flex flex-col w-fit gap-2 mt-2">
             Radios:
             <button

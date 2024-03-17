@@ -12,14 +12,14 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
       role="region"
       aria-label="Player"
     >
-      <h1 class="text-2xl text-black font-medium text-center"><%= @user %>'s chamber</h1>
-      <div class="text-black text-sm text-center py-2"><%= @count %> listeners</div>
+      <h1 class="text-xl text-black font-medium text-center"><%= @user %>'s chamber</h1>
+      <div class="text-black text-xs text-center py-2"><%= @count %> listeners</div>
       <div id="lobby-visualizer" phx-hook="AudioMotionAnalyzerLobby" class="w-full h-4/6 relative py-4">
         <div id="audio-ignore" phx-update="ignore">
           <audio crossorigin="anonymous"></audio>
         </div>
         <div class="h-full" id="visual-container" phx-update="ignore"></div>
-        <h1 class="absolute text-lg text-zinc-900 font-bold top-1/2 left-1/2 w-40 text-center -mx-20">
+        <h1 class="absolute text-base text-zinc-900 font-bold top-1/2 left-1/2 w-40 text-center -mx-20">
           <%= cond do %>
             <% @radio_status.radio_title == nil -> %>
               OFFLINE
@@ -44,12 +44,12 @@ defmodule EchochamberWeb.Chamber.LobbyLive do
         </div>
       </div>
       <%= unless @radio_status.radio_title == nil do %>
-        <h2 class="text-bold text-center text-black text-2xl"><%= @radio_status.radio_title %></h2>
-        <div class="text-black text-sm text-center pt-4 pd-2">Now playing</div>
+        <h2 class="text-bold text-center text-black text-xl"><%= @radio_status.radio_title %></h2>
+        <div class="text-black text-xs text-center pt-4 pd-2">Now playing</div>
         <%= if @radio_status.track_title == nil do %>
-          <div class="text-lg text-center font-bold">Unknown track</div>
+          <div class="text-base text-center font-bold">Unknown track</div>
         <% else %>
-          <div class="text-lg text-center font-bold"><%= @radio_status.track_title %></div>
+          <div class="text-base text-center font-bold"><%= @radio_status.track_title %></div>
         <% end %>
       <% end %>
     </div>

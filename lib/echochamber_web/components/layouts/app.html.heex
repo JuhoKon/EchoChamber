@@ -1,5 +1,5 @@
 <%= if @current_user do %>
-  <div class="flex flex-col w-72 border-r border-black h-full">
+  <div class="flex flex-col w-72 border-r border-zinc-300 h-full">
     <%= live_render(@socket, EchochamberWeb.SidebarLive, id: "sidebar", sticky: "true") %>
   </div>
 <% end %>

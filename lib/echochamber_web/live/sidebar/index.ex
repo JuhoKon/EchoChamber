@@ -26,14 +26,14 @@ defmodule EchochamberWeb.SidebarLive do
   def render(assigns) do
     ~H"""
     <div class="w-full text-black font-light">
-      <h3 class="pt-6 p-4 pl-0 ml-4 text-sm">
+      <h3 class="pt-6 p-4 pl-0 ml-4 text-xs">
         ACTIVE USERS
       </h3>
       <div class="mt-1 space-y-1" role="group">
         <%= for user <- @active_users do %>
           <.link
             navigate={home_path(user.user)}
-            class="text-base group flex items-center pl-5 px-3 py-2 text-base leading-5 rounded-md gap-4"
+            class="group flex items-center pl-5 px-3 py-2 text-sm leading-5 rounded-md gap-4"
           >
             <img
               class="h-6"
