@@ -66,8 +66,8 @@
       <input type="range" id="lobby_volume" name="volume" min="0" max="100" start="50" />
     </div>
   </div>
-  <div class="flex justify-between mt-4 flex-wrap grow min-h-0">
-    <div class="flex flex-col basis-[48%] gap-4 h-full">
+  <div class="flex justify-between mt-4 flex-wrap grow min-h-0 gap-4">
+    <div class="flex flex-col flex-1 gap-4 h-full min-w-0">
       <div class="flex flex-col gap-4 border border-zinc-300 py-4 px-2">
         <div class="text-base text-black text-center">
           <span class="font-bold">Radio:</span> <%= @radio_status.radio_title %>
@@ -142,7 +142,7 @@
         </div>
       </div>
     </div>
-    <div class="border border-zinc-300 basis-[48%] h-full overflow-auto">
+    <div class="border border-zinc-300 flex-1 min-w-0 h-full overflow-auto">
       <div class="flex flex-col w-fit gap-2 mt-2">
         Radios:
         <button
