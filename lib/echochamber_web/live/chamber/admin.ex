@@ -41,25 +41,29 @@ defmodule EchochamberWeb.Chamber.AdminLive do
            id: 1,
            url: "https://uk3.internet-radio.com/proxy/co9?mp=/stream",
            title: "CO9",
-           description: "UK3 CO0 bängereitä"
+           description: "UK3 CO0 bängereitä",
+           genre: "EDM"
          },
          %{
            id: 2,
            url: "https://technobeat.stream.laut.fm/technobeat",
            title: "Technobeat",
-           description: "Teknoloota"
+           description: "Teknoloota",
+           genre: "Techno"
          },
          %{
            id: 3,
            url: "https://uk2.internet-radio.com/proxy/danceradiouk?mp=/stream",
            title: "Dance UK Radio",
-           description: "UK dance music"
+           description: "UK dance music",
+           genre: "EDM"
          },
          %{
            id: 4,
            url: "https://streaming.exclusive.radio/er/eminem/icecast.audio",
            title: "Eminem Exclusive",
-           description: "Pelkkää eminemiä"
+           description: "Pelkkää eminemiä",
+           genre: "Rap"
          }
        ])}
     end

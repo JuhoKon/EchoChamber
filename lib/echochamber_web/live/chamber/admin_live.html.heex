@@ -159,7 +159,7 @@
                 scope="col"
                 class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
               >
-                Title
+                Name
               </th>
               <th
                 scope="col"
@@ -167,6 +167,12 @@
               >
                 Description
               </th>
+              <th
+              scope="col"
+              class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
+            >
+              Genre
+            </th>
             </tr>
           </thead>
           <tbody class="divide-y" phx-update="stream" id="history_table">
@@ -199,6 +205,9 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-xs">
                 <%= radio_item.description %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-xs">
+                <%= radio_item.genre %>
               </td>
             </tr>
           </tbody>
