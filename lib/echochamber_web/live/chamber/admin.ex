@@ -35,7 +35,33 @@ defmodule EchochamberWeb.Chamber.AdminLive do
        )
        |> assign(user: user)
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))
-       |> stream(:history, [])}
+       |> stream(:history, [])
+       |> stream(:radios, [
+         %{
+           id: 1,
+           url: "https://uk3.internet-radio.com/proxy/co9?mp=/stream",
+           title: "CO9",
+           description: "UK3 CO0 bängereitä"
+         },
+         %{
+           id: 2,
+           url: "https://technobeat.stream.laut.fm/technobeat",
+           title: "Technobeat",
+           description: "Teknoloota"
+         },
+         %{
+           id: 3,
+           url: "https://uk2.internet-radio.com/proxy/danceradiouk?mp=/stream",
+           title: "Dance UK Radio",
+           description: "UK dance music"
+         },
+         %{
+           id: 4,
+           url: "https://streaming.exclusive.radio/er/eminem/icecast.audio",
+           title: "Eminem Exclusive",
+           description: "Pelkkää eminemiä"
+         }
+       ])}
     end
   end
 
