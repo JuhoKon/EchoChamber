@@ -18,10 +18,10 @@ defmodule EchochamberWeb.RadioLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:url]} type="text" label="Url" />
-        <.input field={@form[:description]} type="text" label="Description" />
-        <.input field={@form[:genre]} type="text" label="Genre" />
+        <.input field={@form[:name]} type="text" label="Name" placeholder="Name" />
+        <.input field={@form[:url]} type="text" label="URL" placeholder="URL"/>
+        <.input field={@form[:description]} type="text" label="Description" placeholder="Description" />
+        <.input field={@form[:genre]} type="text" label="Genre" placeholder="Genre" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Radio</.button>
         </:actions>

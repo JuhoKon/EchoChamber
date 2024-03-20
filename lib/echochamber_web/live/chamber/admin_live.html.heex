@@ -144,12 +144,15 @@
     </div>
     <div class="border border-zinc-300 flex flex-col flex-1 gap-4 h-full min-w-0">
       <div class="text-base text-black text-center mt-4">
-        <span class="font-bold">Radios</span>
-        <.link patch={~p"/chamber/kontijuh/admin/new"}>
-          <.button>New Radio</.button>
-        </.link>
+       <div class="px-8 flex justify-between content-start">
+          <span class="font-bold">Radios</span>
+          <.link patch={~p"/chamber/kontijuh/admin/new"}>
+            <.button>New Radio</.button>
+          </.link>
+
+        </div>
       </div>
-      <div class="h-full overflow-auto mt-4">
+      <div class="h-full overflow-auto">
         <table class="min-w-full divide-y">
           <thead>
             <tr>
@@ -171,11 +174,11 @@
                 Description
               </th>
               <th
-              scope="col"
-              class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
-            >
-              Genre
-            </th>
+                scope="col"
+                class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
+              >
+                Genre
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y" phx-update="stream" id="radio_table">
@@ -218,7 +221,12 @@
       </div>
     </div>
   </div>
-  <.modal :if={@live_action in [:new, :edit]} id="radio-modal" show on_cancel={JS.patch(~p"/chamber/kontijuh/admin")}>
+  <.modal
+    :if={@live_action in [:new, :edit]}
+    id="radio-modal"
+    show
+    on_cancel={JS.patch(~p"/chamber/kontijuh/admin")}
+  >
     <.live_component
       module={EchochamberWeb.RadioLive.FormComponent}
       title="New Radio"
