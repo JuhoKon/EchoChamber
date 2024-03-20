@@ -43,7 +43,6 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     end
   end
 
-  @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
@@ -58,12 +57,6 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     |> assign(:radio, nil)
   end
 
-  @impl true
-  def handle_info({EchochamberWeb.RadioLive.FormComponent, {:saved, radio}}, socket) do
-    {:noreply, stream_insert(socket, :radios, radio)}
-  end
-
-  @impl true
   def handle_event("js_play_radio", %{"url" => url, "title" => title}, socket) do
     Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Song{
       radio_url: url,
@@ -100,6 +93,10 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     })
 
     {:noreply, socket}
+  end
+
+  def handle_info({EchochamberWeb.RadioLive.FormComponent, {:saved, radio}}, socket) do
+    {:noreply, stream_insert(socket, :radios, radio)}
   end
 
   def handle_info(
