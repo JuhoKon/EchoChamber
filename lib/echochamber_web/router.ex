@@ -64,6 +64,7 @@ defmodule EchochamberWeb.Router do
       live "/chamber/:user/admin", Chamber.AdminLive
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
       live "/radios", RadioLive.Index, :index
       live "/radios/new", RadioLive.Index, :new
       live "/radios/:id/edit", RadioLive.Index, :edit
