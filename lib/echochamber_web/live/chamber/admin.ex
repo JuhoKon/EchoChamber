@@ -38,6 +38,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
        |> assign(user: user)
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))
        |> stream(:history, [])
+       |> assign(:page_title, "Echochamber")
        |> stream(:radios, Radios.list_radios())}
     end
   end

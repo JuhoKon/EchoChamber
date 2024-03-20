@@ -96,128 +96,59 @@
         <div class="text-base text-black text-center mt-4">
           <span class="font-bold">History:</span> Last 25 tracks
         </div>
-        <div class="h-full overflow-auto mt-4">
-          <table class="min-w-full divide-y">
-            <thead>
-              <tr>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
-                >
-                  Track Title
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
-                >
-                  Radio Name
-                </th>
-                <th
-                  scope="col"
-                  class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
-                >
-                  Played At
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y" phx-update="stream" id="history_table">
-              <tr :for={{dom_id, history_item} <- @streams.history} id={dom_id}>
-                <td class="px-6 py-4 whitespace-nowrap text-xs text-pretty max-w-40">
-                  <%= history_item.track_title %>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-xs">
-                  <%= history_item.radio_title %>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap text-xs">
-                  <%= case history_item.track_played_at
-                           |> Timex.local()
-                           |> Timex.format("%H:%M:%S", :strftime) do
-                    {:ok, formatted_string} -> formatted_string
-                    _ -> "Unknown time"
-                  end %>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="h-full overflow-auto px-8">
+          <.table id="history" rows={@streams.history} }>
+            <:col :let={{_id, item}} label="Track title"><%= item.track_title %></:col>
+            <:col :let={{_id, item}} label="Radio name"><%= item.radio_title %></:col>
+            <:col :let={{_id, item}} label="Played at">
+              <%= case item.track_played_at
+                       |> Timex.local()
+                       |> Timex.format("%H:%M:%S", :strftime) do
+                {:ok, formatted_string} -> formatted_string
+                _ -> "Unknown time"
+              end %>
+            </:col>
+          </.table>
         </div>
       </div>
     </div>
     <div class="border border-zinc-300 flex flex-col flex-1 gap-4 h-full min-w-0">
-      <div class="text-base text-black text-center mt-4">
-       <div class="px-8 flex justify-between content-start">
-          <span class="font-bold">Radios</span>
-          <.link patch={~p"/chamber/kontijuh/admin/new"}>
-            <.button>New Radio</.button>
-          </.link>
-
+      <div class="px-8">
+        <div class="text-base text-black text-center mt-4">
+          <div class="flex justify-between content-start">
+            <span class="font-bold">Radios</span>
+            <.link patch={~p"/chamber/kontijuh/admin/new"}>
+              <.button>New Radio</.button>
+            </.link>
+          </div>
         </div>
-      </div>
-      <div class="h-full overflow-auto">
-        <table class="min-w-full divide-y">
-          <thead>
-            <tr>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
+        <div class="h-full overflow-auto">
+          <.table id="radios" rows={@streams.radios} }>
+            <:col :let={{_id, radio}} label="Play">
+              <button
+                phx-click="js_play_radio"
+                phx-value-url={radio.url}
+                phx-value-title={radio.name}
               >
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
-              >
-                Name
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
-              >
-                Description
-              </th>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
-              >
-                Genre
-              </th>
-            </tr>
-          </thead>
-          <tbody class="divide-y" phx-update="stream" id="radio_table">
-            <tr :for={{dom_id, radio_item} <- @streams.radios} id={dom_id}>
-              <th
-                scope="col"
-                class="px-6 py-3 text-left text-xs font-semibold text-gray-800 uppercase tracking-wider"
-              >
-                <button
-                  phx-click="js_play_radio"
-                  phx-value-url={radio_item.url}
-                  phx-value-title={radio_item.name}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="w-8 h-8"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    class="w-8 h-8"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </th>
-              <td class="px-6 py-4 whitespace-nowrap text-xs text-pretty max-w-40">
-                <%= radio_item.name %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-xs">
-                <%= radio_item.description %>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-xs">
-                <%= radio_item.genre %>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </:col>
+            <:col :let={{_id, radio}} label="Name"><%= radio.name %></:col>
+            <:col :let={{_id, radio}} label="Description"><%= radio.description %></:col>
+            <:col :let={{_id, radio}} label="Genre"><%= radio.genre %></:col>
+          </.table>
+        </div>
       </div>
     </div>
   </div>
