@@ -113,42 +113,41 @@
       </div>
     </div>
     <div class="border border-zinc-300 flex flex-col flex-1 gap-4 h-full min-w-0">
-      <div class="px-8">
-        <div class="text-base text-black text-center mt-4">
-          <div class="flex justify-between content-start">
-            <span class="font-bold">Radios</span>
-            <.link patch={~p"/chamber/kontijuh/admin/new"}>
-              <.button>New Radio</.button>
-            </.link>
-          </div>
+      <div class="text-base text-black text-center mt-4 px-8">
+        <div class="flex justify-between content-start">
+          <span class="font-bold">Radios</span>
+          <.link patch={~p"/chamber/kontijuh/admin/new"}>
+            <.button>New Radio</.button>
+          </.link>
         </div>
-        <div class="h-full overflow-auto">
-          <.table id="radios" rows={@streams.radios} }>
-            <:col :let={{_id, radio}} label="Play">
-              <button
-                phx-click="js_play_radio"
-                phx-value-url={radio.url}
-                phx-value-title={radio.name}
+      </div>
+
+      <div class="h-full overflow-auto px-8">
+        <.table id="radios" rows={@streams.radios} }>
+          <:col :let={{_id, radio}} label="Play">
+            <button
+              phx-click="js_play_radio"
+              phx-value-url={radio.url}
+              phx-value-title={radio.name}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-8 h-8"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                  class="w-8 h-8"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-              </button>
-            </:col>
-            <:col :let={{_id, radio}} label="Name"><%= radio.name %></:col>
-            <:col :let={{_id, radio}} label="Description"><%= radio.description %></:col>
-            <:col :let={{_id, radio}} label="Genre"><%= radio.genre %></:col>
-          </.table>
-        </div>
+                <path
+                  fill-rule="evenodd"
+                  d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+          </:col>
+          <:col :let={{_id, radio}} label="Name"><%= radio.name %></:col>
+          <:col :let={{_id, radio}} label="Description"><%= radio.description %></:col>
+          <:col :let={{_id, radio}} label="Genre"><%= radio.genre %></:col>
+        </.table>
       </div>
     </div>
   </div>
