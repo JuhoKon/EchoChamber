@@ -1,0 +1,46 @@
+<div class="p-24">
+<.header>
+  Listing Radios
+  <:actions>
+    <.link patch={~p"/radios/new"}>
+      <.button>New Radio</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="radios"
+  rows={@streams.radios}
+  row_click={fn {_id, radio} -> JS.navigate(~p"/radios/#{radio}") end}
+>
+  <:col :let={{_id, radio}} label="Name"><%= radio.name %></:col>
+  <:col :let={{_id, radio}} label="Url"><%= radio.url %></:col>
+  <:col :let={{_id, radio}} label="Description"><%= radio.description %></:col>
+  <:col :let={{_id, radio}} label="Genre"><%= radio.genre %></:col>
+  <:action :let={{_id, radio}}>
+    <div class="sr-only">
+      <.link navigate={~p"/radios/#{radio}"}>Show</.link>
+    </div>
+    <.link patch={~p"/radios/#{radio}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, radio}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: radio.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="radio-modal" show on_cancel={JS.patch(~p"/radios")}>
+  <.live_component
+    module={EchochamberWeb.RadioLive.FormComponent}
+    id={@radio.id || :new}
+    title={@page_title}
+    action={@live_action}
+    radio={@radio}
+    patch={~p"/radios"}
+  />
+</.modal>
+</div>

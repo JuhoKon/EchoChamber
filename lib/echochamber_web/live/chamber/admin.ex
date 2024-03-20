@@ -2,6 +2,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
   use EchochamberWeb, :live_view
   use Timex
 
+  alias Echochamber.Radios
   alias Echochamber.Accounts
   alias Echochamber.Shoutcast
 
@@ -36,36 +37,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
        |> assign(user: user)
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))
        |> stream(:history, [])
-       |> stream(:radios, [
-         %{
-           id: 1,
-           url: "https://uk3.internet-radio.com/proxy/co9?mp=/stream",
-           title: "CO9",
-           description: "UK3 CO0 bängereitä",
-           genre: "EDM"
-         },
-         %{
-           id: 2,
-           url: "https://technobeat.stream.laut.fm/technobeat",
-           title: "Technobeat",
-           description: "Teknoloota",
-           genre: "Techno"
-         },
-         %{
-           id: 3,
-           url: "https://uk2.internet-radio.com/proxy/danceradiouk?mp=/stream",
-           title: "Dance UK Radio",
-           description: "UK dance music",
-           genre: "EDM"
-         },
-         %{
-           id: 4,
-           url: "https://streaming.exclusive.radio/er/eminem/icecast.audio",
-           title: "Eminem Exclusive",
-           description: "Pelkkää eminemiä",
-           genre: "Rap"
-         }
-       ])}
+       |> stream(:radios, Radios.list_radios())}
     end
   end
 

@@ -175,7 +175,7 @@
             </th>
             </tr>
           </thead>
-          <tbody class="divide-y" phx-update="stream" id="history_table">
+          <tbody class="divide-y" phx-update="stream" id="radio_table">
             <tr :for={{dom_id, radio_item} <- @streams.radios} id={dom_id}>
               <th
                 scope="col"
@@ -184,7 +184,7 @@
                 <button
                   phx-click="js_play_radio"
                   phx-value-url={radio_item.url}
-                  phx-value-title={radio_item.title}
+                  phx-value-title={radio_item.name}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -201,7 +201,7 @@
                 </button>
               </th>
               <td class="px-6 py-4 whitespace-nowrap text-xs text-pretty max-w-40">
-                <%= radio_item.title %>
+                <%= radio_item.name %>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-xs">
                 <%= radio_item.description %>

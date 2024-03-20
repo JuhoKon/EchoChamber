@@ -1,0 +1,30 @@
+<div class="p-24">
+<.header>
+  Radio <%= @radio.name %>
+  <:actions>
+    <.link patch={~p"/radios/#{@radio}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit radio</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name"><%= @radio.name %></:item>
+  <:item title="Url"><%= @radio.url %></:item>
+  <:item title="Description"><%= @radio.description %></:item>
+  <:item title="Genre"><%= @radio.genre %></:item>
+</.list>
+
+<.back navigate={~p"/radios"}>Back to radios</.back>
+
+<.modal :if={@live_action == :edit} id="radio-modal" show on_cancel={JS.patch(~p"/radios/#{@radio}")}>
+  <.live_component
+    module={EchochamberWeb.RadioLive.FormComponent}
+    id={@radio.id}
+    title={@page_title}
+    action={@live_action}
+    radio={@radio}
+    patch={~p"/radios/#{@radio}"}
+  />
+</.modal>
+</div>
