@@ -13,22 +13,19 @@ defmodule Echochamber.Shoutcast do
   end
 
   def read_meta(url) do
-    {:ok, _status, headers, ref} = :hackney.get(url, [{~c"Icy-Metadata", ~c"1"}], "", [])
-
-    offset = get_offset(headers)
-
-    {:ok, data} = read_body(offset + 4081, ref, <<>>)
-
-    {meta_length, meta} = extract_meta(data, offset)
-
-    {:ok,
-     %Meta{
-       data: process_meta(meta),
-       offset: offset,
-       length: meta_length,
-       raw: meta,
-       string: String.trim(meta, <<0>>)
-     }}
+    with {:ok, _status, headers, ref} <- :hackney.get(url, [{~c"Icy-Metadata", ~c"1"}], "", []),
+         offset = get_offset(headers),
+         {:ok, data} <- read_body(offset + 4081, ref, <<>>),
+         {meta_length, meta} <- extract_meta(data, offset) do
+      {:ok,
+       %Meta{
+         data: process_meta(meta),
+         offset: offset,
+         length: meta_length,
+         raw: meta,
+         string: String.trim(meta, <<0>>)
+       }}
+    end
   end
 
   # Stream the body until we get what we want.

@@ -193,15 +193,16 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     {:noreply,
      socket
      |> start_async(:get_track_info, fn ->
-       {:ok, meta} = Shoutcast.read_meta(radio_url)
+       case Shoutcast.read_meta(radio_url) do
+         {:ok, meta} ->
+           case meta.data["StreamTitle"] do
+             "" -> nil
+             value -> value
+           end
 
-       track_title =
-         case meta.data["StreamTitle"] do
-           "" -> nil
-           value -> value
-         end
-
-       track_title
+         {:error, _reason} ->
+           nil
+       end
      end)}
   end
 
