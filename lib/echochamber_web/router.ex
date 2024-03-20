@@ -61,7 +61,8 @@ defmodule EchochamberWeb.Router do
                  on_mount: [{EchochamberWeb.UserAuth, :ensure_authenticated}] do
       live "/", HomeLive
       live "/chamber/:user/lobby", Chamber.LobbyLive
-      live "/chamber/:user/admin", Chamber.AdminLive
+      live "/chamber/:user/admin", Chamber.AdminLive, :index
+      live "/chamber/:user/admin/new", Chamber.AdminLive, :new
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
 

@@ -3,6 +3,7 @@ defmodule EchochamberWeb.Chamber.AdminLive do
   use Timex
 
   alias Echochamber.Radios
+  alias Echochamber.Radios.Radio
   alias Echochamber.Accounts
   alias Echochamber.Shoutcast
 
@@ -41,6 +42,27 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     end
   end
 
+  @impl true
+  def handle_params(params, _url, socket) do
+    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :new, _params) do
+    socket
+    |> assign(:radio, %Radio{})
+  end
+
+  defp apply_action(socket, :index, _params) do
+    socket
+    |> assign(:radio, nil)
+  end
+
+  @impl true
+  def handle_info({EchochamberWeb.RadioLive.FormComponent, {:saved, radio}}, socket) do
+    {:noreply, stream_insert(socket, :radios, radio)}
+  end
+
+  @impl true
   def handle_event("js_play_radio", %{"url" => url, "title" => title}, socket) do
     Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Play_Song{
       radio_url: url,
