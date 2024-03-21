@@ -30,16 +30,26 @@ defmodule EchochamberWeb.Chamber.AdminLive do
 
       Accounts.broadcast_radio_event(socket.assigns.current_user, %Accounts.Events.Stop_Song{})
 
+      %{radios: radios, meta: meta} =
+        case Radios.list_radios() do
+          {:ok, {radios, meta}} ->
+            %{radios: radios, meta: meta}
+
+          {:error, _meta} ->
+            %{radios: [], meta: %{}}
+        end
+
       {:ok,
        socket
        |> assign(
          radio_status: %{radio_url: nil, radio_title: nil, track_title: nil, playing?: nil}
        )
        |> assign(user: user)
+       |> assign(meta: meta)
        |> assign(count: Enum.count(EchochamberWeb.Presence.list_profile_users(user)))
        |> stream(:history, [])
        |> assign(:page_title, "Echochamber")
-       |> stream(:radios, Radios.list_radios())}
+       |> stream(:radios, radios)}
     end
   end
 

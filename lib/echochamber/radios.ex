@@ -10,15 +10,9 @@ defmodule Echochamber.Radios do
 
   @doc """
   Returns the list of radios.
-
-  ## Examples
-
-      iex> list_radios()
-      [%Radio{}, ...]
-
   """
-  def list_radios do
-    Repo.all(Radio)
+  def list_radios(params \\ %{}) do
+    Flop.validate_and_run(Radio, params, for: Radio)
   end
 
   @doc """
