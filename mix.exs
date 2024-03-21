@@ -60,7 +60,8 @@ defmodule Echochamber.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
       {:hackney, "~> 1.18"},
-      {:timex, "~> 3.7"}
+      {:timex, "~> 3.7"},
+      {:flop, "~> 0.25.0"}
     ]
   end
 

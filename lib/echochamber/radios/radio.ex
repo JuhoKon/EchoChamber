@@ -2,6 +2,11 @@ defmodule Echochamber.Radios.Radio do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {
+    Flop.Schema,
+    filterable: [:name, :description, :genre], sortable: [:name, :description, :genre]
+  }
+
   schema "radios" do
     field :name, :string
     field :description, :string

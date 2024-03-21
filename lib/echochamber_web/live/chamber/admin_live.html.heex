@@ -97,7 +97,7 @@
           <span class="font-bold">History:</span> Last 25 tracks
         </div>
         <div class="h-full overflow-auto px-8">
-          <.table id="history" rows={@streams.history} }>
+          <.table id="history" rows={@streams.history}>
             <:col :let={{_id, item}} label="Track title"><%= item.track_title %></:col>
             <:col :let={{_id, item}} label="Radio name"><%= item.radio_title %></:col>
             <:col :let={{_id, item}} label="Played at">
