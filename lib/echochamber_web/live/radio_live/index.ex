@@ -6,7 +6,16 @@ defmodule EchochamberWeb.RadioLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :radios, Radios.list_radios())}
+    %{radios: radios, meta: meta} =
+      case Radios.list_radios() do
+        {:ok, {radios, meta}} ->
+          %{radios: radios, meta: meta}
+
+        {:error, _meta} ->
+          %{radios: [], meta: %{}}
+      end
+
+    {:ok, stream(socket, :radios, radios)}
   end
 
   @impl true
