@@ -32,13 +32,27 @@ defmodule EchochamberWeb.FlopConfig do
       previous_link_attrs: [
         class: ["order-1 rounded-l-lg -mr-px ", item, normal, hover]
       ],
-      previous_link_content: ~H[<div> Previous </div>],
+      previous_link_content:
+        ~H[<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+  <path
+    fill-rule="evenodd"
+    d="M7.72 12.53a.75.75 0 0 1 0-1.06l7.5-7.5a.75.75 0 1 1 1.06 1.06L9.31 12l6.97 6.97a.75.75 0 1 1-1.06 1.06l-7.5-7.5Z"
+    clip-rule="evenodd"
+  />
+</svg>],
       next_link_attrs: [
         class: ["order-3 rounded-r-lg", item, normal, hover]
       ],
-      next_link_content: ~H[<div> Next </div>],
+      next_link_content:
+        ~H[<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+  <path
+    fill-rule="evenodd"
+    d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z"
+    clip-rule="evenodd"
+  />
+</svg>],
       disabled_class: [
-        "cursor-not-allowed !text-gray-300 hover:!bg-white",
+        "cursor-not-allowed !text-gray-300 hover:!bg-white"
       ],
       page_links: {:ellipsis, 3},
       pagination_link_aria_label: &"Go to page #{&1}",
