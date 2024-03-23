@@ -12,7 +12,7 @@ defmodule EchochamberWeb.FlopConfig do
   def pagination_opts do
     assigns = %{}
     item = "flex items-center justify-center px-3 h-8 leading-tight border"
-    hover = "hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-black dark:hover:text-white"
+    hover = "hover:bg-black hover:text-white"
 
     normal =
       "text-gray-500 bg-white border-gray-300"
