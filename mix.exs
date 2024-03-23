@@ -61,7 +61,8 @@ defmodule Echochamber.MixProject do
       {:bandit, "~> 1.2"},
       {:hackney, "~> 1.18"},
       {:timex, "~> 3.7"},
-      {:flop, "~> 0.25.0"}
+      {:flop, "~> 0.25.0"},
+      {:flop_phoenix, "~> 0.22.8"}
     ]
   end
 

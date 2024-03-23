@@ -4,7 +4,7 @@ defmodule Echochamber.Radios.Radio do
 
   @derive {
     Flop.Schema,
-    filterable: [:name, :description, :genre], sortable: [:name, :description, :genre]
+    filterable: [:name, :description, :genre], sortable: [:name, :description, :genre], default_limit: 6
   }
 
   schema "radios" do

@@ -123,7 +123,12 @@
       </div>
 
       <div class="h-full overflow-auto px-8">
-        <.table id="radios" rows={@streams.radios}>
+        <Flop.Phoenix.table
+          opts={EchochamberWeb.FlopConfig.table_opts()}
+          items={@streams.radios}
+          meta={@meta}
+          on_sort={JS.push("sort-radios")}
+        >
           <:col :let={{_id, radio}} label="Play">
             <.link
               phx-click="js_play_radio"
@@ -133,11 +138,20 @@
               Play
             </.link>
           </:col>
-          <:col :let={{_id, radio}} label="Name"><%= radio.name %></:col>
-          <:col :let={{_id, radio}} label="Description"><%= radio.description %></:col>
-          <:col :let={{_id, radio}} label="Genre"><%= radio.genre %></:col>
-        </.table>
+          <:col :let={{_id, radio}} label="Name" field={:name}><%= radio.name %></:col>
+          <:col :let={{_id, radio}} label="Description" field={:description}>
+            <%= radio.description %>
+          </:col>
+          <:col :let={{_id, radio}} label="Genre" field={:genre}><%= radio.genre %></:col>
+        </Flop.Phoenix.table>
       </div>
+      <div class="flex justify-center pb-4">
+      <Flop.Phoenix.pagination
+          opts={EchochamberWeb.FlopConfig.pagination_opts()}
+          meta={@meta}
+          on_paginate={JS.push("paginate-radios")}
+      />
+        </div>
     </div>
   </div>
   <.modal

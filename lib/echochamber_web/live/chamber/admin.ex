@@ -105,6 +105,28 @@ defmodule EchochamberWeb.Chamber.AdminLive do
     {:noreply, socket}
   end
 
+  def handle_event("paginate-radios", %{"page" => page}, socket) do
+    flop = Flop.set_page(socket.assigns.meta.flop, page)
+
+    with {:ok, {radios, meta}} <- Radios.list_radios(flop) do
+      {:noreply,
+       socket
+       |> stream(:radios, radios, reset: true)
+       |> assign(meta: meta)}
+    end
+  end
+
+  def handle_event("sort-radios", %{"order" => order}, socket) do
+    flop = Flop.push_order(socket.assigns.meta.flop, order)
+
+    with {:ok, {radios, meta}} <- Radios.list_radios(flop) do
+      {:noreply,
+       socket
+       |> stream(:radios, radios, reset: true)
+       |> assign(meta: meta)}
+    end
+  end
+
   def handle_info({EchochamberWeb.RadioLive.FormComponent, {:saved, radio}}, socket) do
     {:noreply, stream_insert(socket, :radios, radio)}
   end
